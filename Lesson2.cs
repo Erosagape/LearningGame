@@ -13,7 +13,7 @@ namespace LearningGame
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1366;
             graphics.PreferredBackBufferWidth = 768;
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
             IsMouseVisible = true;
 
             Content.RootDirectory = "Content";
@@ -24,7 +24,7 @@ namespace LearningGame
         }
         protected override void LoadContent()
         {
-            titleBackground = Content.Load<Texture2D>("moogle1");
+            titleBackground = Content.Load<Texture2D>("titlescreen");
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             base.LoadContent();
         }
@@ -34,13 +34,25 @@ namespace LearningGame
         }
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.White);
+            graphics.GraphicsDevice.Clear(Color.Transparent);
             
-            Viewport viewPort = graphics.GraphicsDevice.Viewport;            
+            Viewport viewPort = graphics.GraphicsDevice.Viewport;   
+            
+            int imagePositionX = (int)(viewPort.Width*0.1);
+            int imagePositionY = (int)(viewPort.Height*0.1);
+
+            int imageWidth = viewPort.Width - (imagePositionX*2);
+            int imageHeight = viewPort.Height - (imagePositionY*2);
+
+            Window.Title = "X=" + imagePositionX + ",Y=" + imagePositionY;
+            Window.Title += ",Width=" + imageWidth + ",Height=" + imageHeight;
+            Window.Title += ",Resolution=" + viewPort.Width + "x" + viewPort.Height;
+
             Rectangle backgroundRectangle = new Rectangle(
-                0, 0,
-                titleBackground.Width,
-                titleBackground.Height
+                 imagePositionX,
+                 imagePositionY,
+                imageWidth,
+                imageHeight
                 );
 
             spriteBatch.Begin();
