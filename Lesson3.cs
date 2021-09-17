@@ -215,8 +215,6 @@ namespace LearningGame
 
             int framePositionX = MathHelper.Clamp((roomWidth / 2) + (int)spritePosition.X, 10, roomWidth - 10);
             int framePositionY = MathHelper.Clamp((roomHeight / 2) + (int)spritePosition.Y, 100, roomHeight - 10);
-            //int framePositionX = MathHelper.Clamp( (roomWidth / 2) + (int)spritePosition.X , 0 ,roomWidth);
-            //int framePositionY = MathHelper.Clamp( (roomHeight / 2) + (int)spritePosition.Y , 0 ,roomHeight);
 
             Vector2 spriteLocation = new Vector2(spriteWidth * (int)spriteMotion, spriteHeight * (int)spriteMove);
 
