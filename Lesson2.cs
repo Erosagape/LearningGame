@@ -24,7 +24,7 @@ namespace LearningGame
         }
         protected override void LoadContent()
         {
-            titleBackground = Content.Load<Texture2D>("titlescreen");
+            titleBackground = Content.Load<Texture2D>("moogle1");
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             base.LoadContent();
         }

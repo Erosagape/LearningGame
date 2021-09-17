@@ -7,7 +7,7 @@ namespace LearningGame
         [STAThread]
         static void Main()
         {
-            using (var game = new Lesson2())
+            using (var game = new Lesson3())
                 game.Run();
         }
     }
