@@ -28,14 +28,16 @@ namespace LearningGame
         SpriteMotion spriteMotion;
         Vector2 spritePosition;
         KeyboardState keyboardCurrent;
-        KeyboardState keyboardPrevious;        
+        KeyboardState keyboardPrevious;
+        bool isChangeScene = false;
         public Lesson3()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1366;
             graphics.PreferredBackBufferWidth = 768;
-            graphics.IsFullScreen = false;
+            graphics.IsFullScreen = true;
             IsMouseVisible = true;
+            
             Content.RootDirectory = "Content";
         }
         protected override void Initialize()
@@ -54,13 +56,18 @@ namespace LearningGame
         }
         protected override void Update(GameTime gameTime)
         {
-            int spriteWalkSpeed=1;
-            int spriteRunSpeed=4;
-            bool onMove = false;
-
             keyboardPrevious = keyboardCurrent;
             keyboardCurrent = Keyboard.GetState();
+            
+            if (keyboardCurrent.IsKeyDown(Keys.Escape))
+                Exit();
 
+            if (keyboardCurrent.IsKeyUp(Keys.Enter) && keyboardPrevious.IsKeyDown(Keys.Enter))
+                isChangeScene=!isChangeScene;
+
+            int spriteWalkSpeed = 1;
+            int spriteRunSpeed = 4;
+            bool onMove = false;
             if (keyboardCurrent.IsKeyDown(Keys.W))
             {
                 spriteMove = SpriteMove.MoveUp;
@@ -133,34 +140,85 @@ namespace LearningGame
         }
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.Blue);
+            graphics.GraphicsDevice.Clear(Color.White);
 
+            if (!isChangeScene)
+                DrawNoBackground();
+            else
+                DrawWithBackground();
+
+            base.Draw(gameTime);
+        }
+        private void DrawNoBackground()
+        {
             Viewport viewPort = graphics.GraphicsDevice.Viewport;
-            
-            Rectangle backgroundRectangle = new Rectangle(
-            0, 0,
-            viewPort.Width,
-            viewPort.Height
-            );
-            
+
             int spriteRows = 4;
             int spriteCols = 3;
 
             int spriteWidth = (int)(spriteSource.Width / spriteCols);
             int spriteHeight = (int)(spriteSource.Height / spriteRows);
 
-            int frameWidth = (int)(spriteWidth*2);
-            int frameHeight = (int)(spriteHeight*2);
+            int roomWidth = (int)(viewPort.Width - spriteWidth);
+            int roomHeight = (int)(viewPort.Height - spriteHeight);
+
+            int framePositionX = MathHelper.Clamp( (roomWidth / 2) + (int)spritePosition.X , 0 ,roomWidth);
+            int framePositionY = MathHelper.Clamp( (roomHeight / 2) + (int)spritePosition.Y , 0 ,roomHeight);
+
+            Vector2 spriteLocation = new Vector2(spriteWidth * (int)spriteMotion, spriteHeight * (int)spriteMove);
+
+            Rectangle spriteRectangle = new Rectangle(
+                (int)spriteLocation.X,
+                (int)spriteLocation.Y,
+                spriteWidth,
+                spriteHeight
+                );
+
+            Rectangle frameRectangle = new Rectangle(
+                framePositionX,
+                framePositionY,
+                spriteWidth,
+                spriteHeight
+                );
+
+            spriteBatch.Begin();
+            spriteBatch.Draw(spriteSource, frameRectangle, spriteRectangle, Color.White);
+            spriteBatch.End();
+
+            Window.Title = "X=" + framePositionX + ",Y=" + framePositionY;
+            Window.Title += ",Width=" + spriteWidth + ",Height=" + spriteHeight;
+            Window.Title += ",Resolution=" + viewPort.Width + "x" + viewPort.Height;
+            Window.Title += ",Move=" + spriteMove + ",Motion=" + spriteMotion;
+
+        }
+        private void DrawWithBackground()
+        {
+            Viewport viewPort = graphics.GraphicsDevice.Viewport;
+
+            Rectangle backgroundRectangle = new Rectangle(
+            0, 0,
+            viewPort.Width,
+            viewPort.Height
+            );
+
+            int spriteRows = 4;
+            int spriteCols = 3;
+
+            int spriteWidth = (int)(spriteSource.Width / spriteCols);
+            int spriteHeight = (int)(spriteSource.Height / spriteRows);
+
+            int frameWidth = (int)(spriteWidth * 2);
+            int frameHeight = (int)(spriteHeight * 2);
 
             int roomWidth = (int)(viewPort.Width - frameWidth);
             int roomHeight = (int)(viewPort.Height - frameHeight);
 
-            int framePositionX = MathHelper.Clamp( (roomWidth / 2) + (int)spritePosition.X , 10 ,roomWidth - 10);
-            int framePositionY = MathHelper.Clamp( (roomHeight / 2) + (int)spritePosition.Y , 100 ,roomHeight - 10);
+            int framePositionX = MathHelper.Clamp((roomWidth / 2) + (int)spritePosition.X, 10, roomWidth - 10);
+            int framePositionY = MathHelper.Clamp((roomHeight / 2) + (int)spritePosition.Y, 100, roomHeight - 10);
             //int framePositionX = MathHelper.Clamp( (roomWidth / 2) + (int)spritePosition.X , 0 ,roomWidth);
             //int framePositionY = MathHelper.Clamp( (roomHeight / 2) + (int)spritePosition.Y , 0 ,roomHeight);
 
-            Vector2 spriteLocation = new Vector2(spriteWidth * (int)spriteMotion, spriteHeight*(int)spriteMove);
+            Vector2 spriteLocation = new Vector2(spriteWidth * (int)spriteMotion, spriteHeight * (int)spriteMove);
 
             Rectangle spriteRectangle = new Rectangle(
                 (int)spriteLocation.X,
@@ -178,10 +236,8 @@ namespace LearningGame
 
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundSource, backgroundRectangle, Color.White);
-            spriteBatch.Draw(spriteSource, frameRectangle,spriteRectangle,Color.White);
+            spriteBatch.Draw(spriteSource, frameRectangle, spriteRectangle, Color.White);
             spriteBatch.End();
-
-            base.Draw(gameTime);
 
             Window.Title = "X=" + framePositionX + ",Y=" + framePositionY;
             Window.Title += ",Width=" + spriteWidth + ",Height=" + spriteHeight;
