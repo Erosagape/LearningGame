@@ -7,90 +7,164 @@ namespace LearningGame
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        int spritePosX;
-        int spritePosY;
-        int spriteRow = 0;
-        int spriteIndex = 0;
-        int spriteSet = 0;
-        int spriteWidth = 50;
-        int spriteHeight = 48;
+        Texture2D background;
         Texture2D chocoSource;
+        Rectangle chocoYellow;
+        SpriteBatch spriteBatch;
+        Vector2 spritePos;
+        int spritePosX = 50;
+        int spritePosY = 48;
+        int spriteMotion = 1;
+        int spriteIndex = 0;
+        float frameCount;
+        bool isAnimated = true;
+        KeyboardState previousKeyState;
+        KeyboardState currentKeyState;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";          
+            graphics.PreferredBackBufferWidth = 1366;
+            graphics.PreferredBackBufferWidth = 768;
+            graphics.IsFullScreen = false;
+            IsMouseVisible = true;
+
+            Content.RootDirectory = "Content";
         }
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            isAnimated = false;
             base.Initialize();
         }
-
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            background = Content.Load<Texture2D>("titlescreen");
             chocoSource = Content.Load<Texture2D>("chocobo");
-            // TODO: use this.Content to load your game content here
+            spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             base.LoadContent();
         }
+        private void ChangeMotion()
+        {
+            if (spriteMotion == 2)
+            {
+                spriteMotion = 0;
+            }
+            else
+            {
+                spriteMotion += 1;
+            }
+        }
+        private void ChangeDirection()
+        {
+            if (spriteIndex == 3)
+            {
+                spriteIndex = 0;
+            }
+            else
+            {
+                spriteIndex += 1;
+            }
+        }
+
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
-                || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-                
-            if(Keyboard.GetState().IsKeyUp(Keys.Space)){
-                if (spriteIndex < 2)
-                {
-                    spriteIndex++;
-                }                    
-                else
-                {
-                    spriteIndex = 0;
-                }
-            }
-            
-            if (Keyboard.GetState().IsKeyUp(Keys.Enter))
+            frameCount += 1;
+            previousKeyState = currentKeyState;
+            currentKeyState = Keyboard.GetState();
+            bool isMove = false;
+            if (currentKeyState.IsKeyUp(Keys.Left) && previousKeyState.IsKeyDown(Keys.Left))
             {
-                if (spriteRow < 3)
+                spriteIndex = 1;
+                spritePos.X -= 5;
+                ChangeMotion();
+                isMove = true;
+            }
+            if (currentKeyState.IsKeyUp(Keys.Right) && previousKeyState.IsKeyDown(Keys.Right))
+            {
+                spriteIndex = 2;
+                spritePos.X += 5;
+                ChangeMotion();
+                isMove = true;
+            }
+            if (currentKeyState.IsKeyUp(Keys.Down) && previousKeyState.IsKeyDown(Keys.Down))
+            {
+                spriteIndex = 0;
+                spritePos.Y += 5;
+                ChangeMotion();
+                isMove = true;
+            }
+            if (currentKeyState.IsKeyUp(Keys.Up) && previousKeyState.IsKeyDown(Keys.Up))
+            {
+                spriteIndex = 3;
+                spritePos.Y -= 5;
+                ChangeMotion();
+                isMove = true;
+            }
+            if (currentKeyState.IsKeyUp(Keys.Enter) && previousKeyState.IsKeyDown(Keys.Enter))
+            {
+                ChangeMotion();
+                isMove = true;
+            }
+            if (currentKeyState.IsKeyUp(Keys.Space) && previousKeyState.IsKeyDown(Keys.Space))
+            {
+                ChangeDirection();
+                isMove = true;
+            }
+            if (currentKeyState.IsKeyUp(Keys.Escape) && previousKeyState.IsKeyDown(Keys.Escape))
+            {
+                isAnimated = !isAnimated;
+            }
+            if (isMove == false && isAnimated == true)
+            {
+                if ((frameCount % 20) == 0)
                 {
-                    spriteRow++;
-                }
-                else
-                {
-                    spriteRow = 0;
+                    ChangeMotion();
+                    if (spriteMotion == 2)
+                    {
+                        ChangeDirection();
+                    }
                 }
             }
             base.Update(gameTime);
         }
-
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.White);
+
             Viewport viewPort = graphics.GraphicsDevice.Viewport;
 
-            spritePosX = (viewPort.Width - spriteWidth) / 2;
-            spritePosY = (viewPort.Height - spriteHeight) / 2; 
-            
-            Vector2 spritePosition = new Vector2(
-                spritePosX,spritePosY
-            );
-
-            int col_modifier = (spriteIndex * spriteWidth);
-            int row_modifier = (spriteRow * spriteHeight);
-
-            Rectangle characterPosition = new Rectangle(
-                spriteSet+row_modifier, spriteWidth+col_modifier,
-                spriteWidth,spriteHeight
+            chocoYellow = new Rectangle(
+                spritePosX * spriteMotion, spritePosY * spriteIndex,
+                spritePosX, spritePosY
                 );
 
+            int frameWidth = spritePosX * 2;
+            int frameHeight = spritePosY * 2;
+
+            int framePosX = (int)((viewPort.Width - frameWidth) / 2) + (int)spritePos.X;
+            int framePosY = (int)((viewPort.Height - frameHeight) / 2) + (int)spritePos.Y;
+
+            framePosX = MathHelper.Clamp(framePosX, 0, (viewPort.Width - frameWidth));
+            framePosY = MathHelper.Clamp(framePosY, 100, (viewPort.Height - frameHeight));
+
+            Rectangle sourceRectangle = new Rectangle(
+                framePosX, framePosY,
+                frameWidth,
+                frameHeight
+                );
+
+            Rectangle backgroundRect = new Rectangle(
+                0, 0,
+                viewPort.Width, viewPort.Height
+                );
+
+            Window.Title = "FPS:" + frameCount + " MODE: " + (isAnimated ? "AUTO" : "MANUAL");
+
             spriteBatch.Begin();
-            spriteBatch.Draw(chocoSource, spritePosition, characterPosition,Color.White);
+            spriteBatch.Draw(background, backgroundRect, Color.White);
+            spriteBatch.Draw(chocoSource, sourceRectangle, chocoYellow, Color.White);
             spriteBatch.End();
-            // TODO: Add your drawing code here
+
             base.Draw(gameTime);
         }
-
     }
 }
