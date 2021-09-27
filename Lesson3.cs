@@ -4,39 +4,16 @@ using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace LearningGame
-{
-    
+{    
     public class Lesson3 : Game
     {
-        enum SpriteAnimation
-        {
-            WalkRight = 0,
-            Stand = 1,
-            WalkLeft = 2
-        }
-        enum SpriteDirection
-        {
-            MoveDown = 0,
-            MoveLeft = 1,
-            MoveRight = 2,
-            MoveUp = 3
-        }
-
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         bool isAnimated;
 
         Texture2D backgroundSource;
-
-        Texture2D chocoSource;        
-        Rectangle chocoYellow;
-        Vector2 chocoPosition;       
-        SpriteAnimation chocoAnimation = SpriteAnimation.Stand;
-        SpriteDirection chocoDirection = SpriteDirection.MoveDown;
-        int chocoWalkSpeed;
-        int chocoRunSpeed;
-        bool chocoMove;
+        SpriteCharacter chocoboYellow;
 
         int wallLeft;
         int wallRight;
@@ -63,13 +40,13 @@ namespace LearningGame
         protected override void Initialize()
         {
             isAnimated = true;
-            chocoMove = false;
+            chocoboYellow.IsMove = false;
             base.Initialize();
         }
         protected override void LoadContent()
         {
             backgroundSource = Content.Load<Texture2D>("titlescreen");
-            chocoSource = Content.Load<Texture2D>("chocobo");            
+            chocoboYellow.SpriteSource = Content.Load<Texture2D>("chocobo");            
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             base.LoadContent();
         }
@@ -148,7 +125,10 @@ namespace LearningGame
         private bool UpdateMovement(ref Vector2 position,ref SpriteDirection direction,ref int walkSpeed,ref int runSpeed)
         {
             bool isMove = false;
-            if(IsKeyHold(Keys.W)|| IsKeyHold(Keys.S) || IsKeyHold(Keys.A) || IsKeyHold(Keys.D))
+            if(IsKeyHold(Keys.W)
+            || IsKeyHold(Keys.S) 
+            || IsKeyHold(Keys.A) 
+            || IsKeyHold(Keys.D))
             {
                 walkSpeed += runSpeed;
             }
@@ -204,19 +184,20 @@ namespace LearningGame
 
             Window.Title = "FPS:" + framePerSeconds + " MODE: " + (isAnimated ? "JOGGING" : "STANDING");
 
-            chocoWalkSpeed = 1;
-            chocoRunSpeed = 4;
+            chocoboYellow.WalkSpeed = 1;
+            chocoboYellow.RunSpeed = 4;
         }
         private void UpdateAnimation()
         {
-            UpdateDirection(ref chocoAnimation, ref chocoDirection);
+            UpdateDirection(ref chocoboYellow.Animation, ref chocoboYellow.Direction);
+            chocoboYellow.IsMove = UpdateMovement(
+                ref chocoboYellow.SpritePosition, ref chocoboYellow.Direction, 
+                ref chocoboYellow.WalkSpeed, ref chocoboYellow.RunSpeed);            
 
-            chocoMove = UpdateMovement(ref chocoPosition, ref chocoDirection, ref chocoWalkSpeed, ref chocoRunSpeed);            
-
-            if (chocoMove)
+            if (chocoboYellow.IsMove)
             {
-                ChangeAnimation(ref chocoAnimation);
-                chocoMove = false;
+                ChangeAnimation(ref chocoboYellow.Animation);
+                chocoboYellow.IsMove = false;
             }
             else
             {
@@ -224,25 +205,24 @@ namespace LearningGame
                 {
                     if (frameCount % 20 == 0)
                     {
-                        ChangeAnimation(ref chocoAnimation);
+                        ChangeAnimation(ref chocoboYellow.Animation);
                         frameCount = 0;
                     }
                 }
                 else
                 {
-                    chocoAnimation = SpriteAnimation.Stand;
+                    chocoboYellow.Animation = SpriteAnimation.Stand;
                 }
             }
-
             UpdateCharacter();
         }
         private void UpdateCharacter()
         {
-            int posX = (int)(chocoSource.Width / 12);
-            int posY = (int)(chocoSource.Height / 8);
+            int posX = (int)(chocoboYellow.SpriteSource.Width / 12);
+            int posY = (int)(chocoboYellow.SpriteSource.Height / 8);
 
-            chocoYellow = new Rectangle(
-                posX * (int)chocoAnimation, posY * (int)chocoDirection,
+            chocoboYellow.SpriteRectangle = new Rectangle(
+                posX * (int)chocoboYellow.Animation, posY * (int)chocoboYellow.Direction,
                 posX, posY
                 );
         }
@@ -295,7 +275,13 @@ namespace LearningGame
             spriteBatch.Begin();
 
             DrawBackGround(viewPort);
-            DrawCharacter(viewPort, chocoSource, chocoYellow, 120, 100, chocoPosition);
+            DrawCharacter(
+                viewPort, 
+                chocoboYellow.SpriteSource, 
+                chocoboYellow.SpriteRectangle, 
+                120, 100, 
+                chocoboYellow.SpritePosition
+                );
             
             spriteBatch.End();
 
