@@ -13,7 +13,20 @@ namespace LearningGame
         bool isAnimated;
 
         Texture2D backgroundSource;
-        SpriteCharacter chocoboYellow;
+        
+        Chocobo player;
+
+        Chocobo chocoboYellow=new Chocobo(0,0,120,100);
+        Chocobo chocoboWhite=new Chocobo(150,0,50,50);
+        Chocobo chocoboRed=new Chocobo(300,0,100,80);
+        Chocobo chocoboBlue=new Chocobo(450,0,120,80);
+
+        Chocobo chocoboGreen = new Chocobo(0, 192, 60, 70);
+        Chocobo chocoboBlack = new Chocobo(150, 192, 100, 90);
+        Chocobo chocoboGold = new Chocobo(300, 192, 80, 90);
+        Chocobo chocoboOrange = new Chocobo(450, 192, 90, 100);
+
+        Moogle mog=new Moogle(0,0,60,70);
 
         int wallLeft;
         int wallRight;
@@ -40,13 +53,40 @@ namespace LearningGame
         protected override void Initialize()
         {
             isAnimated = true;
-            chocoboYellow.IsMove = false;
+            wallDown = 10;
+            wallLeft = 10;
+            wallRight = 10;
+            wallUp = 100;
+
+            chocoboWhite.Direction = SpriteDirection.MoveRight;
+            chocoboBlue.Direction = SpriteDirection.MoveRight;
+            chocoboBlack.Direction = SpriteDirection.MoveRight;
+            chocoboGreen.Direction = SpriteDirection.MoveLeft;
+            chocoboGold.Direction = SpriteDirection.MoveLeft;            
+            chocoboRed.Direction = SpriteDirection.MoveLeft;
+            chocoboOrange.Direction = SpriteDirection.MoveUp;
+
+            mog.Direction = SpriteDirection.MoveDown;
+            
+            player = chocoboYellow;
+
             base.Initialize();
         }
         protected override void LoadContent()
         {
             backgroundSource = Content.Load<Texture2D>("titlescreen");
+            
+            mog.SpriteSource = Content.Load<Texture2D>("moogle1");
+
             chocoboYellow.SpriteSource = Content.Load<Texture2D>("chocobo");
+            chocoboWhite.SpriteSource = Content.Load<Texture2D>("chocobo");
+            chocoboRed.SpriteSource = Content.Load<Texture2D>("chocobo");
+            chocoboBlue.SpriteSource = Content.Load<Texture2D>("chocobo");
+            chocoboGreen.SpriteSource = Content.Load<Texture2D>("chocobo");
+            chocoboBlack.SpriteSource = Content.Load<Texture2D>("chocobo");
+            chocoboGold.SpriteSource = Content.Load<Texture2D>("chocobo");
+            chocoboOrange.SpriteSource = Content.Load<Texture2D>("chocobo");
+
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             base.LoadContent();
         }
@@ -61,102 +101,58 @@ namespace LearningGame
         private bool IsKeyHold(Keys key)
         {
             return previousKeyState.IsKeyDown(key) && currentKeyState.IsKeyDown(key);
-        }
-        private void ChangeAnimation(ref SpriteAnimation animation)
+        }       
+
+        private void UpdateCharacter(SpriteCharacter character)
         {
-            switch (animation)
-            {
-                case SpriteAnimation.Stand:
-                    animation = SpriteAnimation.WalkLeft;
-                    break;
-                case SpriteAnimation.WalkLeft:
-                    animation = SpriteAnimation.WalkRight;
-                    break;
-                case SpriteAnimation.WalkRight:
-                    animation = SpriteAnimation.Stand;
-                    break;
-            }
-        }
-        private void ChangeDirection(ref SpriteDirection direction)
-        {
-            switch (direction)
-            {
-                case SpriteDirection.MoveUp:
-                    direction = SpriteDirection.MoveRight;
-                    break;
-                case SpriteDirection.MoveRight:
-                    direction = SpriteDirection.MoveDown;
-                    break;
-                case SpriteDirection.MoveDown:
-                    direction = SpriteDirection.MoveLeft;
-                    break;
-                case SpriteDirection.MoveLeft:
-                    direction = SpriteDirection.MoveUp;
-                    break;
-            }
-        }
-        private void UpdateDirection(ref SpriteAnimation animation, ref SpriteDirection direction)
-        {
+            //Check Face Angle 
             if (IsKeyPress(Keys.Up) || IsKeyPress(Keys.Down) || IsKeyPress(Keys.Left) || IsKeyPress(Keys.Right))
             {
-                animation = SpriteAnimation.Stand;
+                character.Animation = SpriteAnimation.Stand;
                 if (IsKeyPress(Keys.Up))
                 {
-                    direction = SpriteDirection.MoveUp;
+                    character.Direction = SpriteDirection.MoveUp;
                 }
                 if (IsKeyPress(Keys.Down))
                 {
-                    direction = SpriteDirection.MoveDown;
+                    character.Direction = SpriteDirection.MoveDown;
                 }
                 if (IsKeyPress(Keys.Left))
                 {
-                    direction = SpriteDirection.MoveLeft;
+                    character.Direction = SpriteDirection.MoveLeft;
                 }
                 if (IsKeyPress(Keys.Right))
                 {
-                    direction = SpriteDirection.MoveRight;
+                    character.Direction = SpriteDirection.MoveRight;
                 }
             }
-            if (IsKeyPress(Keys.Space))
-            {
-                ChangeDirection(ref direction);
-            }
-        }
-        private bool UpdateMovement(ref Vector2 position, ref SpriteDirection direction, ref int walkSpeed, ref int runSpeed)
-        {
-            bool isMove = false;
+
+            //Check Walking animation
+            character.IsMove = false;
             if (IsKeyHold(Keys.W)
             || IsKeyHold(Keys.S)
             || IsKeyHold(Keys.A)
             || IsKeyHold(Keys.D))
             {
-                walkSpeed += runSpeed;
+                character.Run();
             }
             if (IsKeyDown(Keys.W))
             {
-                direction = SpriteDirection.MoveUp;
-                position.Y -= walkSpeed;
-                isMove = true;
+                character.MoveUp();
             }
             if (IsKeyDown(Keys.S))
             {
-                direction = SpriteDirection.MoveDown;
-                position.Y += walkSpeed;
-                isMove = true;
+                character.MoveDown();
             }
             if (IsKeyDown(Keys.A))
             {
-                direction = SpriteDirection.MoveLeft;
-                position.X -= walkSpeed;
-                isMove = true;
+                character.MoveLeft();
             }
             if (IsKeyDown(Keys.D))
             {
-                direction = SpriteDirection.MoveRight;
-                position.X += walkSpeed;
-                isMove = true;
+                character.MoveRight();
             }
-            return isMove;
+            
         }
         private void UpdateState(TimeSpan timePass)
         {
@@ -167,8 +163,7 @@ namespace LearningGame
             if (IsKeyPress(Keys.Enter))
             {
                 isAnimated = !isAnimated;
-            }
-
+            }           
             if (totalSeconds != (int)timePass.TotalSeconds)
             {
                 totalSeconds = (int)timePass.TotalSeconds;
@@ -183,82 +178,96 @@ namespace LearningGame
             currentKeyState = Keyboard.GetState();
 
             Window.Title = "FPS:" + framePerSeconds + " MODE: " + (isAnimated ? "JOGGING" : "STANDING");
-
-            chocoboYellow.WalkSpeed = 1;
-            chocoboYellow.RunSpeed = 4;
-        }
-        private void UpdateAnimation()
+        }    
+        private void SetupCharacter()
         {
-            UpdateDirection(ref chocoboYellow.Animation, ref chocoboYellow.Direction);
-            chocoboYellow.IsMove = UpdateMovement(
-                ref chocoboYellow.SpritePosition, ref chocoboYellow.Direction,
-                ref chocoboYellow.WalkSpeed, ref chocoboYellow.RunSpeed);
+            mog.IsAnimated = true;
+            mog.SetSpeed(2, 1);
 
-            if (chocoboYellow.IsMove)
-            {
-                ChangeAnimation(ref chocoboYellow.Animation);
-                chocoboYellow.IsMove = false;
-            }
-            else
-            {
-                if (isAnimated)
-                {
-                    if (frameCount % 20 == 0)
-                    {
-                        ChangeAnimation(ref chocoboYellow.Animation);
-                        frameCount = 0;
-                    }
-                }
-                else
-                {
-                    chocoboYellow.Animation = SpriteAnimation.Stand;
-                }
-            }
-            UpdateCharacter();
-        }
-        private void UpdateCharacter()
-        {
-            int posX = (int)(chocoboYellow.SpriteSource.Width / 12);
-            int posY = (int)(chocoboYellow.SpriteSource.Height / 8);
+            chocoboYellow.IsAnimated = isAnimated;
+            chocoboYellow.SetSpeed(1, 4);
 
-            chocoboYellow.SpriteRectangle = new Rectangle(
-                posX * (int)chocoboYellow.Animation, posY * (int)chocoboYellow.Direction,
-                posX, posY
-                );
+            chocoboWhite.IsAnimated = true;
+            chocoboWhite.SetSpeed(2, 3);
+
+            chocoboRed.IsAnimated = false;
+            chocoboRed.SetSpeed(3, 2);
+
+            chocoboBlue.IsAnimated = !isAnimated;
+            chocoboBlue.SetSpeed(4, 1);
+
+            chocoboGreen.IsAnimated = !isAnimated;
+            chocoboGreen.SetSpeed(2, 4);
+
+            chocoboBlack.IsAnimated = false;
+            chocoboBlack.SetSpeed(3, 3);
+
+            chocoboGold.IsAnimated = true;
+            chocoboGold.SetSpeed(4, 2);
+
+            chocoboOrange.IsAnimated = isAnimated;
+            chocoboOrange.SetSpeed(1, 2);
+
+            if (IsKeyPress(Keys.Space))
+            {
+                player.ChangeDirection();
+            }
+            if (IsKeyPress(Keys.Tab))
+            {
+                if (player.Equals(chocoboYellow))
+                {
+                    player = chocoboRed;
+                }
+                else if (player.Equals(chocoboRed))
+                {
+                    player = chocoboGreen;
+                }
+                else if (player.Equals(chocoboGreen))
+                {
+                    player = chocoboBlue;
+                }
+                else if (player.Equals(chocoboBlue))
+                {
+                    player = chocoboBlack;
+                }
+                else if (player.Equals(chocoboBlack))
+                {
+                    player = chocoboWhite;
+                }
+                else if (player.Equals(chocoboWhite))
+                {
+                    player = chocoboOrange;
+                }
+                else if (player.Equals(chocoboOrange))
+                {
+                    player = chocoboGold;
+                }
+                else if (player.Equals(chocoboGold))
+                {
+                    player = chocoboYellow;
+                }
+            }
         }
         protected override void Update(GameTime gameTime)
         {
             UpdateState(gameTime.TotalGameTime);
-            UpdateAnimation();
+            SetupCharacter();
+            UpdateCharacter(player);
+
+            mog.Update(frameCount);
+            chocoboYellow.Update(frameCount);
+            chocoboWhite.Update(frameCount);
+            chocoboRed.Update(frameCount);
+            chocoboBlue.Update(frameCount);
+            chocoboGreen.Update(frameCount);
+            chocoboBlack.Update(frameCount);
+            chocoboGold.Update(frameCount);
+            chocoboOrange.Update(frameCount);
 
             base.Update(gameTime);
         }
-        private void DrawCharacter(Viewport vp, Texture2D charSource, Rectangle charRect, int charWidth, int charHeight, Vector2 charPos)
-        {
-            int spaceWidth = (int)(vp.Width - charWidth);
-            int spaceHeight = (int)(vp.Height - charHeight);
-
-            int calPositionX = (spaceWidth / 2) + (int)charPos.X;
-            int calPositionY = (spaceHeight / 2) + (int)charPos.Y;
-
-            int charPositionX = MathHelper.Clamp(calPositionX, wallLeft, spaceWidth - wallRight);
-            int charPositionY = MathHelper.Clamp(calPositionY, wallUp, spaceHeight - wallDown);
-
-            Rectangle frameRect = new Rectangle(
-                charPositionX, charPositionY,
-                charWidth,
-                charHeight
-                );
-
-            spriteBatch.Draw(charSource, frameRect, charRect, Color.White);
-        }
         private void DrawBackGround(Viewport vp)
         {
-            wallLeft = 10;
-            wallRight = 10;
-            wallUp = 100;
-            wallDown = 10;
-
             Rectangle backgroundRectangle = new Rectangle(
                 0, 0,
                 vp.Width,
@@ -275,13 +284,21 @@ namespace LearningGame
             spriteBatch.Begin();
 
             DrawBackGround(viewPort);
-            DrawCharacter(
-                viewPort,
-                chocoboYellow.SpriteSource,
-                chocoboYellow.SpriteRectangle,
-                120, 100,
-                chocoboYellow.SpritePosition
-                );
+            
+            chocoboYellow.DrawCenter(viewPort, spriteBatch, wallLeft, wallRight, wallUp, wallDown);            
+            chocoboWhite.Draw(viewPort, spriteBatch, new Vector2(50,100), wallLeft, wallRight, wallUp, wallDown);
+            chocoboRed.Draw(viewPort, spriteBatch, new Vector2(500, 350), wallLeft, wallRight, wallUp, wallDown);
+            chocoboBlue.Draw(viewPort, spriteBatch, new Vector2(100, 250), wallLeft, wallRight, wallUp, wallDown);
+            chocoboGreen.Draw(viewPort, spriteBatch, new Vector2(750, 150), wallLeft, wallRight, wallUp, wallDown);
+            chocoboBlack.Draw(viewPort, spriteBatch, new Vector2(0, 500), wallLeft, wallRight, wallUp, wallDown);
+            chocoboGold.Draw(viewPort, spriteBatch, new Vector2(650, 450), wallLeft, wallRight, wallUp, wallDown);
+            chocoboOrange.Draw(viewPort, spriteBatch, 
+                new Vector2((int)(viewPort.Width - mog.Width) / 2, (int)(viewPort.Height - chocoboOrange.Height)), 
+                wallLeft, wallRight, wallUp, wallDown);
+            mog.Draw(viewPort, spriteBatch, 
+                new Vector2((int)(viewPort.Width - mog.Width)/2, 100), 
+                wallLeft, wallRight, wallUp, wallDown);
+            
 
             spriteBatch.End();
 
@@ -289,3 +306,4 @@ namespace LearningGame
         }
     }
 }
+
