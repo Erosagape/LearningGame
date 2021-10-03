@@ -13,7 +13,8 @@ namespace LearningGame
         bool isAnimated;
 
         Texture2D backgroundSource;
-        
+        TileSet map;
+
         Chocobo player;
 
         Chocobo chocoboYellow=new Chocobo(0,0,120,100);
@@ -74,8 +75,8 @@ namespace LearningGame
         }
         protected override void LoadContent()
         {
-            backgroundSource = Content.Load<Texture2D>("titlescreen");
-            
+            backgroundSource = Content.Load<Texture2D>("tileset1");
+
             mog.SpriteSource = Content.Load<Texture2D>("moogle1");
 
             chocoboYellow.SpriteSource = Content.Load<Texture2D>("chocobo");
@@ -266,15 +267,36 @@ namespace LearningGame
 
             base.Update(gameTime);
         }
-        private void DrawBackGround(Viewport vp)
+        private void DrawSurface(SpriteBatch spriteBatch)
         {
-            Rectangle backgroundRectangle = new Rectangle(
-                0, 0,
-                vp.Width,
-                vp.Height
-            );
+            for(int i = 1; i <= 50; i++)
+            {
+                for (int j = 1; j <= 50; j++)
+                {
+                    int frameWidth = 32;
+                    int frameHeight = 32;
+                    int posX = (int)((i - 1) * frameWidth);
+                    int posY = (int)((j - 1) * frameHeight);
+                    Rectangle frame = new Rectangle(
+                        new Point(posX, posY), new Point(frameWidth,frameHeight)
+                        );
+                    Rectangle sprite = new Rectangle(
+                        0, 0, 32, 32
+                        );
+                    spriteBatch.Draw(backgroundSource, frame, sprite, Color.White);
 
-            spriteBatch.Draw(backgroundSource, backgroundRectangle, Color.White);
+                }
+            }
+        }
+        private void DrawObject(SpriteBatch spriteBatch,int xDest,int yDest,int Wide,int High,int xSource,int ySource,int Width,int Height)
+        {
+            Rectangle frame = new Rectangle(
+                new Point(xDest, yDest), new Point(Wide, High)
+            );
+            Rectangle sprite = new Rectangle(
+                xSource,ySource, Width, Height
+            );
+            spriteBatch.Draw(backgroundSource, frame, sprite, Color.White);
         }
         protected override void Draw(GameTime gameTime)
         {
@@ -282,22 +304,39 @@ namespace LearningGame
             Viewport viewPort = graphics.GraphicsDevice.Viewport;
 
             spriteBatch.Begin();
+            DrawSurface(spriteBatch);
+            DrawObject(spriteBatch, 50, 100, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 70, 40, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 550, 100, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 470, 40, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 490, 520, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 350, 420, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 150, 320, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 170, 240, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 350, 50, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 260, 200, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 300, 400, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 200, 150, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 550, 450, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 660, 200, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 700, 400, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 600, 150, 64, 64, 0, 32, 32, 32);
+            DrawObject(spriteBatch, 400, 200, 64, 64, 96, 32, 32, 32);
+            DrawObject(spriteBatch, 500, 300, 64, 64, 192, 32, 32, 32);
 
-            DrawBackGround(viewPort);
-            
-            chocoboYellow.DrawCenter(viewPort, spriteBatch, wallLeft, wallRight, wallUp, wallDown);            
-            chocoboWhite.Draw(viewPort, spriteBatch, new Vector2(50,100), wallLeft, wallRight, wallUp, wallDown);
-            chocoboRed.Draw(viewPort, spriteBatch, new Vector2(500, 350), wallLeft, wallRight, wallUp, wallDown);
-            chocoboBlue.Draw(viewPort, spriteBatch, new Vector2(100, 250), wallLeft, wallRight, wallUp, wallDown);
-            chocoboGreen.Draw(viewPort, spriteBatch, new Vector2(750, 150), wallLeft, wallRight, wallUp, wallDown);
-            chocoboBlack.Draw(viewPort, spriteBatch, new Vector2(0, 500), wallLeft, wallRight, wallUp, wallDown);
-            chocoboGold.Draw(viewPort, spriteBatch, new Vector2(650, 450), wallLeft, wallRight, wallUp, wallDown);
+            chocoboYellow.DrawCenter(viewPort, spriteBatch);            
+            chocoboWhite.Draw(viewPort, spriteBatch, new Vector2(50,100));
+            chocoboRed.Draw(viewPort, spriteBatch, new Vector2(500, 350));
+            chocoboBlue.Draw(viewPort, spriteBatch, new Vector2(100, 250));
+            chocoboGreen.Draw(viewPort, spriteBatch, new Vector2(750, 150));
+            chocoboBlack.Draw(viewPort, spriteBatch, new Vector2(0, 500));
+            chocoboGold.Draw(viewPort, spriteBatch, new Vector2(650, 450));
             chocoboOrange.Draw(viewPort, spriteBatch, 
-                new Vector2((int)(viewPort.Width - mog.Width) / 2, (int)(viewPort.Height - chocoboOrange.Height)), 
-                wallLeft, wallRight, wallUp, wallDown);
+                new Vector2((int)(viewPort.Width - mog.Width) / 2, (int)(viewPort.Height - chocoboOrange.Height)) 
+                );
             mog.Draw(viewPort, spriteBatch, 
-                new Vector2((int)(viewPort.Width - mog.Width)/2, 100), 
-                wallLeft, wallRight, wallUp, wallDown);
+                new Vector2((int)(viewPort.Width - mog.Width)/2, 100) 
+                );
             
 
             spriteBatch.End();
@@ -306,4 +345,6 @@ namespace LearningGame
         }
     }
 }
+
+
 

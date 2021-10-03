@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
+
 namespace LearningGame
 {
     public enum SpriteAnimation
@@ -115,7 +117,7 @@ namespace LearningGame
 
             int spriteWidth = (int)(this.SpriteSource.Width / this.SpriteCols);
             int spriteHeight = (int)(this.SpriteSource.Height / this.SpriteRows);
-            
+
             if (Width == 0) Width = spriteWidth;
             if (Height == 0) Height = spriteHeight;
 
@@ -127,7 +129,7 @@ namespace LearningGame
                 spriteWidth, spriteHeight
                 );
         }
-        public void Draw(Viewport vp, SpriteBatch spriteBatch,Vector2 position ,int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
+        public void Draw(Viewport vp, SpriteBatch spriteBatch, Vector2 position, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
         {
             int spaceWidth = (int)(vp.Width - Width);
             int spaceHeight = (int)(vp.Height - Height);
@@ -147,7 +149,7 @@ namespace LearningGame
             spriteBatch.Draw(this.SpriteSource, frameRect, this.SpriteRectangle, Color.White);
         }
 
-        public void DrawCenter(Viewport vp,SpriteBatch spriteBatch,int limitLeft=0,int limitRight=0,int limitUp=0,int limitDown=0)
+        public void DrawCenter(Viewport vp, SpriteBatch spriteBatch, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
         {
             int spaceWidth = (int)(vp.Width - Width);
             int spaceHeight = (int)(vp.Height - Height);
@@ -167,4 +169,131 @@ namespace LearningGame
             spriteBatch.Draw(this.SpriteSource, frameRect, this.SpriteRectangle, Color.White);
         }
     }
+    public class Cell
+    {
+        public int Row;
+        public int Col;
+        public object Value;
+    }
+    public class Tile
+    {
+        public int Width;
+        public int Height;
+        public int X;
+        public int Y;
+        public Vector2 Position;
+        public Tile()
+        {
+
+        }
+        public Tile(int x, int y)
+        {
+            X = x;
+            Y = y;         
+        }
+        public Tile(int x,int y,int w,int h)
+        {
+            X = x;
+            Y = y;
+            Width = w;
+            Height = h;
+        }
+    }
+    public class TileMap
+    {
+        Tile[,] tiles;
+        public int Rows;
+        public int Cols;
+        public int TileWidth;
+        public int TileHeight;
+        public TileMap(int rows,int cols)
+        {
+            Rows = rows;
+            Cols = cols;
+            tiles = new Tile[rows, cols];
+        }
+        public Tile[,] GetTiles()
+        {
+            return tiles;
+        }
+        public Tile GetTile(int row,int col)
+        {
+            return tiles[row, col];
+        }
+        public void ClearTiles()
+        {
+            tiles = new Tile[Rows, Cols];
+        }
+        public void FillMap(Tile tile)
+        {
+            for(int row = 0; row < Rows; row++)
+            {
+                for (int col = 0; col < Cols; col++)
+                {
+                    int posX = (int)col * TileWidth;
+                    int posY = (int)row * TileHeight;
+                    tile.Position = new Vector2(posX, posY);
+                    SetTile(row, col, tile);
+                }
+            }
+        }
+        public void SetTiles(List<Cell> cells,Tile tile)
+        {
+            foreach(Cell cell in cells)
+            {
+                if (cell.Row < Rows)
+                {
+                    if(cell.Col< Cols)
+                    {
+                        SetTile(cell.Row, cell.Col, tile);
+                    }
+                }
+            }
+        }
+        public void SetTile(int row,int col,Tile tile)
+        {
+            Tile t = new Tile();
+            t.Width = tile.Width;
+            t.Height = tile.Height;
+            t.X = tile.X;
+            t.Y = tile.Y;
+            t.Position = tile.Position;
+            tiles[row, col] = t;
+        }
+    }
+    public class TileSet
+    {
+        public Texture2D SpriteSource;
+        public TileMap TileMap;
+        public TileSet(Texture2D source)
+        {
+            SpriteSource = source;
+        }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            for(int r = 0; r < TileMap.Rows; r++)
+            {
+                for (int c = 0; r < TileMap.Cols; r++)
+                {
+                    Tile tile = TileMap.GetTile(r, c);
+
+                    Rectangle frame = new Rectangle(
+                        (int)tile.Position.X,
+                        (int)tile.Position.Y,
+                        tile.Width,
+                        tile.Height
+                        );
+
+                    Rectangle sprite = new Rectangle(
+                        tile.X,
+                        tile.Y,
+                        TileMap.TileWidth,
+                        TileMap.TileHeight
+                        );
+                    spriteBatch.Draw(SpriteSource,frame,sprite, Color.White);
+                }
+            }
+        }
+    }
+
 }
