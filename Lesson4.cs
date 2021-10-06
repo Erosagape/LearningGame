@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace LearningGame
 {
@@ -13,9 +14,9 @@ namespace LearningGame
         bool isAnimated;
 
         Texture2D backgroundSource;
-        TileSet map;
+        TileSet surface;
 
-        Chocobo player;
+        SpriteCharacter player;
 
         Chocobo chocoboYellow=new Chocobo(0,0,120,100);
         Chocobo chocoboWhite=new Chocobo(150,0,50,50);
@@ -28,11 +29,6 @@ namespace LearningGame
         Chocobo chocoboOrange = new Chocobo(450, 192, 90, 100);
 
         Moogle mog=new Moogle(0,0,60,70);
-
-        int wallLeft;
-        int wallRight;
-        int wallUp;
-        int wallDown;
 
         int totalSeconds;
         int totalFrames;
@@ -54,10 +50,6 @@ namespace LearningGame
         protected override void Initialize()
         {
             isAnimated = true;
-            wallDown = 10;
-            wallLeft = 10;
-            wallRight = 10;
-            wallUp = 100;
 
             chocoboWhite.Direction = SpriteDirection.MoveRight;
             chocoboBlue.Direction = SpriteDirection.MoveRight;
@@ -69,7 +61,7 @@ namespace LearningGame
 
             mog.Direction = SpriteDirection.MoveDown;
             
-            player = chocoboYellow;
+            player = mog;
 
             base.Initialize();
         }
@@ -87,6 +79,12 @@ namespace LearningGame
             chocoboBlack.SpriteSource = Content.Load<Texture2D>("chocobo");
             chocoboGold.SpriteSource = Content.Load<Texture2D>("chocobo");
             chocoboOrange.SpriteSource = Content.Load<Texture2D>("chocobo");
+
+            surface = new TileSet(backgroundSource);
+            surface.CreateMap(50, 50);
+            surface.TileMap.FrameWidth = 32;
+            surface.TileMap.FrameHeight = 32;
+            surface.TileMap.FillMap(new Tile(0, 0, 32, 32));
 
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             base.LoadContent();
@@ -215,7 +213,11 @@ namespace LearningGame
             }
             if (IsKeyPress(Keys.Tab))
             {
-                if (player.Equals(chocoboYellow))
+                if (player.Equals(mog))
+                {
+                    player = chocoboYellow;
+                }
+                else if (player.Equals(chocoboYellow))
                 {
                     player = chocoboRed;
                 }
@@ -267,77 +269,67 @@ namespace LearningGame
 
             base.Update(gameTime);
         }
-        private void DrawSurface(SpriteBatch spriteBatch)
-        {
-            for(int i = 1; i <= 50; i++)
-            {
-                for (int j = 1; j <= 50; j++)
-                {
-                    int frameWidth = 32;
-                    int frameHeight = 32;
-                    int posX = (int)((i - 1) * frameWidth);
-                    int posY = (int)((j - 1) * frameHeight);
-                    Rectangle frame = new Rectangle(
-                        new Point(posX, posY), new Point(frameWidth,frameHeight)
-                        );
-                    Rectangle sprite = new Rectangle(
-                        0, 0, 32, 32
-                        );
-                    spriteBatch.Draw(backgroundSource, frame, sprite, Color.White);
 
-                }
-            }
-        }
-        private void DrawObject(SpriteBatch spriteBatch,int xDest,int yDest,int Wide,int High,int xSource,int ySource,int Width,int Height)
-        {
-            Rectangle frame = new Rectangle(
-                new Point(xDest, yDest), new Point(Wide, High)
-            );
-            Rectangle sprite = new Rectangle(
-                xSource,ySource, Width, Height
-            );
-            spriteBatch.Draw(backgroundSource, frame, sprite, Color.White);
-        }
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.White);
             Viewport viewPort = graphics.GraphicsDevice.Viewport;
 
             spriteBatch.Begin();
-            DrawSurface(spriteBatch);
-            DrawObject(spriteBatch, 50, 100, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 70, 40, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 550, 100, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 470, 40, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 490, 520, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 350, 420, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 150, 320, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 170, 240, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 350, 50, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 260, 200, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 300, 400, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 200, 150, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 550, 450, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 660, 200, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 700, 400, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 600, 150, 64, 64, 0, 32, 32, 32);
-            DrawObject(spriteBatch, 400, 200, 64, 64, 96, 32, 32, 32);
-            DrawObject(spriteBatch, 500, 300, 64, 64, 192, 32, 32, 32);
+
+            surface.DrawFloor(spriteBatch);
+
+            Tile grass = new Tile(32, 0, 32, 32);
+            List<Point> pos = new List<Point>();
+            for(int i = 200; i <= 600; i += 32)
+            {
+                for (int j = 200; j <= 600; j += 32)
+                {
+                    pos.Add(new Point(i, j));
+                }
+            }
+            surface.DrawObjects(spriteBatch, pos.ToArray(), 32, 32, grass);
+
+            Tile tree1 = new Tile(96, 32, 32, 32);
+            List<Point> positions = new List<Point>() { 
+                new Point(550,100),
+                new Point(470,40),
+                new Point(490,520),
+                new Point(350,420),
+                new Point(320,50),
+                new Point(260,200),
+                new Point(300,400),
+                new Point(200,150)
+            };            
+            surface.DrawObjects(spriteBatch, positions.ToArray(), 64, 64,tree1);
+                        
+            surface.DrawObject(spriteBatch, 500, 300, 64, 64, new Tile(192, 32, 32, 32));
 
             chocoboYellow.DrawCenter(viewPort, spriteBatch);            
-            chocoboWhite.Draw(viewPort, spriteBatch, new Vector2(50,100));
+            chocoboWhite.Draw(viewPort, spriteBatch, new Vector2(50,0));
             chocoboRed.Draw(viewPort, spriteBatch, new Vector2(500, 350));
-            chocoboBlue.Draw(viewPort, spriteBatch, new Vector2(100, 250));
+            chocoboBlue.Draw(viewPort, spriteBatch, new Vector2(0, 250));
             chocoboGreen.Draw(viewPort, spriteBatch, new Vector2(750, 150));
             chocoboBlack.Draw(viewPort, spriteBatch, new Vector2(0, 500));
             chocoboGold.Draw(viewPort, spriteBatch, new Vector2(650, 450));
             chocoboOrange.Draw(viewPort, spriteBatch, 
-                new Vector2((int)(viewPort.Width - mog.Width) / 2, (int)(viewPort.Height - chocoboOrange.Height)) 
+                new Vector2((int)(viewPort.Width - mog.Width) / 2, (int)(viewPort.Height - chocoboOrange.Height)-50) 
                 );
+            
             mog.Draw(viewPort, spriteBatch, 
                 new Vector2((int)(viewPort.Width - mog.Width)/2, 100) 
                 );
-            
+
+            Tile tree2 = new Tile(0, 32, 32, 32);
+            surface.DrawObject(spriteBatch, 50, 100, 64, 64, tree2);
+            surface.DrawObject(spriteBatch, 70, 40, 32, 64, tree2);
+            surface.DrawObject(spriteBatch, 150, 320, 64, 32, tree2);
+            surface.DrawObject(spriteBatch, 170, 240, 50, 60, tree2);
+            surface.DrawObject(spriteBatch, 550, 450, 60, 50, tree2);
+            surface.DrawObject(spriteBatch, 660, 200, 45, 70, tree2);
+            surface.DrawObject(spriteBatch, 700, 400, 80, 60, tree2);
+            surface.DrawObject(spriteBatch, 600, 150, 60, 80, tree2);
+            surface.DrawObject(spriteBatch, 400, 200, 48, 64, tree2);
 
             spriteBatch.End();
 

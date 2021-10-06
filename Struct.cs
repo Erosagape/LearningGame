@@ -198,14 +198,20 @@ namespace LearningGame
             Width = w;
             Height = h;
         }
+        public Rectangle GetRectangle()
+        {
+            return new Rectangle(
+                X,Y,Width,Height
+                );
+        }
     }
     public class TileMap
     {
         Tile[,] tiles;
         public int Rows;
         public int Cols;
-        public int TileWidth;
-        public int TileHeight;
+        public int FrameWidth;
+        public int FrameHeight;
         public TileMap(int rows,int cols)
         {
             Rows = rows;
@@ -226,12 +232,13 @@ namespace LearningGame
         }
         public void FillMap(Tile tile)
         {
+            ClearTiles();
             for(int row = 0; row < Rows; row++)
             {
                 for (int col = 0; col < Cols; col++)
                 {
-                    int posX = (int)col * TileWidth;
-                    int posY = (int)row * TileHeight;
+                    int posX = (int)col * FrameWidth;
+                    int posY = (int)row * FrameHeight;
                     tile.Position = new Vector2(posX, posY);
                     SetTile(row, col, tile);
                 }
@@ -257,7 +264,7 @@ namespace LearningGame
             t.Height = tile.Height;
             t.X = tile.X;
             t.Y = tile.Y;
-            t.Position = tile.Position;
+            t.Position =new Vector2(tile.Position.X,tile.Position.Y);
             tiles[row, col] = t;
         }
     }
@@ -269,28 +276,43 @@ namespace LearningGame
         {
             SpriteSource = source;
         }
-        public void Draw(SpriteBatch spriteBatch)
+        public void CreateMap(int rows,int cols)
+        {
+            TileMap = new TileMap(rows, cols);
+        }
+        public void DrawObjects(SpriteBatch spriteBatch,Point[] points,int Wide,int High,Tile tile)
+        {
+            foreach(Point point in points)
+            {
+                Rectangle frame = new Rectangle(
+                    point, new Point(Wide, High)
+                    );
+                spriteBatch.Draw(SpriteSource, frame, tile.GetRectangle(), Color.White);
+            }
+        }
+        public void DrawObject(SpriteBatch spriteBatch, int xDest, int yDest, int Wide, int High, Tile tile)
+        {
+            Rectangle frame = new Rectangle(
+                new Point(xDest, yDest), new Point(Wide, High)
+            );
+            spriteBatch.Draw(SpriteSource, frame, tile.GetRectangle(), Color.White);
+        }
+        public void DrawFloor(SpriteBatch spriteBatch)
         {
             for(int r = 0; r < TileMap.Rows; r++)
             {
-                for (int c = 0; r < TileMap.Cols; r++)
+                for (int c = 0; c < TileMap.Cols; c++)
                 {
                     Tile tile = TileMap.GetTile(r, c);
 
                     Rectangle frame = new Rectangle(
                         (int)tile.Position.X,
                         (int)tile.Position.Y,
-                        tile.Width,
-                        tile.Height
+                        TileMap.FrameWidth,
+                        TileMap.FrameHeight
                         );
 
-                    Rectangle sprite = new Rectangle(
-                        tile.X,
-                        tile.Y,
-                        TileMap.TileWidth,
-                        TileMap.TileHeight
-                        );
-                    spriteBatch.Draw(SpriteSource,frame,sprite, Color.White);
+                    spriteBatch.Draw(SpriteSource,frame,tile.GetRectangle(), Color.White);
                 }
             }
         }
