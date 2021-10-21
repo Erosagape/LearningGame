@@ -221,7 +221,7 @@ namespace LearningGame
             int posX = (int)(chocoboYellow.SpriteSource.Width / 12);
             int posY = (int)(chocoboYellow.SpriteSource.Height / 8);
 
-            chocoboYellow.SpriteRectangle = new Rectangle(
+            chocoboYellow.SourceRectangle = new Rectangle(
                 posX * (int)chocoboYellow.Animation, posY * (int)chocoboYellow.Direction,
                 posX, posY
                 );
@@ -278,7 +278,7 @@ namespace LearningGame
             DrawCharacter(
                 viewPort, 
                 chocoboYellow.SpriteSource, 
-                chocoboYellow.SpriteRectangle, 
+                chocoboYellow.SourceRectangle, 
                 120, 100, 
                 chocoboYellow.SpritePosition
                 );

@@ -17,7 +17,9 @@ namespace LearningGame
     public class SpriteCharacter
     {
         public Texture2D SpriteSource;
-        public Rectangle SpriteRectangle;
+        public Rectangle SourceRectangle;
+        public Rectangle DestinationRectangle;
+        public Rectangle CollisionRectangle;
         public Vector2 SpritePosition;
         public SpriteAnimation Animation;
         public SpriteDirection Direction;
@@ -25,6 +27,35 @@ namespace LearningGame
         public int SpriteRows;
         public int OriginX;
         public int OriginY;
+        public Point CurrentPosition;
+        public Point TopOrigin
+        {
+            get
+            {
+                return new Point((CollisionRectangle.X+CollisionRectangle.Width)/2, CollisionRectangle.Y);
+            }
+        }
+        public Point RightOrigin
+        {
+            get
+            {
+                return new Point(CollisionRectangle.X + CollisionRectangle.Width, (CollisionRectangle.Y + CollisionRectangle.Height)/2);
+            }
+        }
+        public Point LeftOrigin
+        {
+            get
+            {
+                return new Point(CollisionRectangle.X, (CollisionRectangle.Y + CollisionRectangle.Height) / 2);
+            }
+        }
+        public Point BottomOrigin
+        {
+            get
+            {
+                return new Point((CollisionRectangle.X + CollisionRectangle.Width)/2, CollisionRectangle.Y + CollisionRectangle.Height);
+            }
+        }
         public int WalkSpeed;
         public int RunSpeed;
         public int AnimationSpeed;
@@ -32,6 +63,8 @@ namespace LearningGame
         public int Height;
         public bool IsMove;
         public bool IsAnimated;
+        public bool IsPlayer;
+        public bool OnCollide;
         public void ChangeAnimation()
         {
             switch (this.Animation)
@@ -67,27 +100,31 @@ namespace LearningGame
         }
         public void MoveUp()
         {
-            this.Direction = SpriteDirection.MoveUp;
-            this.SpritePosition.Y -= this.WalkSpeed;
             this.IsMove = true;
+            if (OnCollide) return;
+            this.Direction = SpriteDirection.MoveUp;            
+            this.SpritePosition.Y -= this.WalkSpeed;
         }
         public void MoveDown()
         {
-            this.Direction = SpriteDirection.MoveDown;
-            this.SpritePosition.Y += this.WalkSpeed;
             this.IsMove = true;
+            if (OnCollide) return;
+            this.Direction = SpriteDirection.MoveDown;            
+            this.SpritePosition.Y += this.WalkSpeed;
         }
         public void MoveLeft()
         {
-            this.Direction = SpriteDirection.MoveLeft;
-            this.SpritePosition.X -= this.WalkSpeed;
             this.IsMove = true;
+            if (OnCollide) return;
+            this.Direction = SpriteDirection.MoveLeft;            
+            this.SpritePosition.X -= this.WalkSpeed;
         }
         public void MoveRight()
         {
+            this.IsMove = true;
+            if (OnCollide) return;
             this.Direction = SpriteDirection.MoveRight;
             this.SpritePosition.X += this.WalkSpeed;
-            this.IsMove = true;
         }
         public void Run()
         {
@@ -124,7 +161,7 @@ namespace LearningGame
             int posX = spriteWidth * (int)this.Animation;
             int posY = spriteHeight * (int)this.Direction;
 
-            this.SpriteRectangle = new Rectangle(
+            this.SourceRectangle = new Rectangle(
                 this.OriginX + posX, this.OriginY + posY,
                 spriteWidth, spriteHeight
                 );
@@ -137,16 +174,16 @@ namespace LearningGame
             int calPositionX = (int)position.X + (int)this.SpritePosition.X;
             int calPositionY = (int)position.Y + (int)this.SpritePosition.Y;
 
-            int charPositionX = MathHelper.Clamp(calPositionX, limitLeft, spaceWidth - limitRight);
-            int charPositionY = MathHelper.Clamp(calPositionY, limitUp, spaceHeight - limitDown);
+            CurrentPosition.X = MathHelper.Clamp(calPositionX, limitLeft, spaceWidth - limitRight);
+            CurrentPosition.Y = MathHelper.Clamp(calPositionY, limitUp, spaceHeight - limitDown);
 
-            Rectangle frameRect = new Rectangle(
-                charPositionX, charPositionY,
+            this.DestinationRectangle = new Rectangle(
+                CurrentPosition.X, CurrentPosition.Y,
                 Width,
                 Height
                 );
 
-            spriteBatch.Draw(this.SpriteSource, frameRect, this.SpriteRectangle, Color.White);
+            spriteBatch.Draw(this.SpriteSource, this.DestinationRectangle, this.SourceRectangle, Color.White);
         }
 
         public void DrawCenter(Viewport vp, SpriteBatch spriteBatch, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
@@ -157,16 +194,29 @@ namespace LearningGame
             int calPositionX = (spaceWidth / 2) + (int)this.SpritePosition.X;
             int calPositionY = (spaceHeight / 2) + (int)this.SpritePosition.Y;
 
-            int charPositionX = MathHelper.Clamp(calPositionX, limitLeft, spaceWidth - limitRight);
-            int charPositionY = MathHelper.Clamp(calPositionY, limitUp, spaceHeight - limitDown);
+            CurrentPosition.X = MathHelper.Clamp(calPositionX, limitLeft, spaceWidth - limitRight);
+            CurrentPosition.Y = MathHelper.Clamp(calPositionY, limitUp, spaceHeight - limitDown);
 
-            Rectangle frameRect = new Rectangle(
-                charPositionX, charPositionY,
+            DestinationRectangle = new Rectangle(
+                CurrentPosition.X, CurrentPosition.Y,
                 Width,
                 Height
                 );
 
-            spriteBatch.Draw(this.SpriteSource, frameRect, this.SpriteRectangle, Color.White);
+            spriteBatch.Draw(this.SpriteSource, DestinationRectangle, this.SourceRectangle, Color.White);
+        }
+        public bool IsCollide(SpriteCharacter compareTo)
+        {
+            bool isCollide= compareTo.CollisionRectangle.Intersects(this.CollisionRectangle);
+            if (isCollide)
+            {
+                OnCollide = true;
+            }
+            else
+            {
+                OnCollide = false;
+            }
+            return isCollide;
         }
     }
     public class Tile

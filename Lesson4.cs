@@ -24,6 +24,8 @@ namespace LearningGame
         Chocobo chocoboGold = new Chocobo(300, 192, 80, 90);
         Chocobo chocoboOrange = new Chocobo(450, 192, 90, 100);
 
+        List<SpriteCharacter> npcs = new List<SpriteCharacter>();
+
         Moogle mog=new Moogle(0,0,60,70);
 
         int totalSeconds;
@@ -56,10 +58,42 @@ namespace LearningGame
             chocoboOrange.Direction = SpriteDirection.MoveUp;
 
             mog.Direction = SpriteDirection.MoveDown;
-            
+            mog.IsPlayer = true;
             player = mog;
 
+            npcs = new List<SpriteCharacter>();
+            npcs.Add(mog);
+            npcs.Add(chocoboGold);
+            npcs.Add(chocoboOrange);
+            npcs.Add(chocoboRed);
+            npcs.Add(chocoboGreen);
+            npcs.Add(chocoboWhite);
+            npcs.Add(chocoboBlue);
+            npcs.Add(chocoboBlack);
+
+            UpdateNPC();
             base.Initialize();
+        }
+        protected void UpdateNPC()
+        {
+            foreach(SpriteCharacter npc in npcs)
+            {
+                npc.IsPlayer = npc.Equals(player);
+            }
+        }
+        protected bool CheckCollision()
+        {
+            foreach (SpriteCharacter npc in npcs)
+            {
+                if (!npc.IsPlayer)
+                {
+                    if (npc.IsCollide(player))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         protected override void LoadContent()
         {
@@ -131,23 +165,25 @@ namespace LearningGame
             {
                 character.Run();
             }
-            if (IsKeyDown(Keys.W))
+            if (CheckCollision() == false)
             {
-                character.MoveUp();
+                if (IsKeyDown(Keys.W))
+                {
+                    character.MoveUp();
+                }
+                if (IsKeyDown(Keys.S))
+                {
+                    character.MoveDown();
+                }
+                if (IsKeyDown(Keys.A))
+                {
+                    character.MoveLeft();
+                }
+                if (IsKeyDown(Keys.D))
+                {
+                    character.MoveRight();
+                }
             }
-            if (IsKeyDown(Keys.S))
-            {
-                character.MoveDown();
-            }
-            if (IsKeyDown(Keys.A))
-            {
-                character.MoveLeft();
-            }
-            if (IsKeyDown(Keys.D))
-            {
-                character.MoveRight();
-            }
-            
         }
         private void UpdateState(TimeSpan timePass)
         {
@@ -171,8 +207,6 @@ namespace LearningGame
 
             previousKeyState = currentKeyState;
             currentKeyState = Keyboard.GetState();
-
-            Window.Title = "FPS:" + framePerSeconds + " MODE: " + (isAnimated ? "JOGGING" : "STANDING");
         }    
         private void SetupCharacter()
         {
@@ -245,10 +279,12 @@ namespace LearningGame
                 {
                     player = chocoboYellow;
                 }
+                UpdateNPC();
             }
         }
         protected override void Update(GameTime gameTime)
         {
+
             UpdateState(gameTime.TotalGameTime);
             SetupCharacter();
             UpdateCharacter(player);
@@ -268,6 +304,9 @@ namespace LearningGame
 
         protected override void Draw(GameTime gameTime)
         {
+            Window.Title = "FPS:" + framePerSeconds + " MODE: " + (isAnimated ? "JOGGING" : "STANDING");
+            Window.Title += " Player=" + player.OriginX + "/" + player.OriginY + " Dest=" + chocoboYellow.OriginX + "/" + chocoboYellow.OriginY;
+
             graphics.GraphicsDevice.Clear(Color.White);
             Viewport viewPort = graphics.GraphicsDevice.Viewport;
 

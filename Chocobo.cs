@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using Microsoft.Xna.Framework;
 namespace LearningGame
 {
     public class Chocobo : SpriteCharacter
@@ -24,6 +24,14 @@ namespace LearningGame
         {
             WalkSpeed = walkSpeed;
             RunSpeed = runSpeed;
+        }
+        public void SetCollision()
+        {
+            CollisionRectangle = new Rectangle(
+                CurrentPosition.X, CurrentPosition.Y - 10,
+                Width - 40,
+                Height - 40
+            );
         }
     }
 }
