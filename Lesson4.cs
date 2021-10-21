@@ -10,19 +10,15 @@ namespace LearningGame
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
         bool isAnimated;
-
         Texture2D backgroundSource;
         TileSet surface;
-
         SpriteCharacter player;
 
         Chocobo chocoboYellow=new Chocobo(0,0,120,100);
         Chocobo chocoboWhite=new Chocobo(150,0,50,50);
         Chocobo chocoboRed=new Chocobo(300,0,100,80);
         Chocobo chocoboBlue=new Chocobo(450,0,120,80);
-
         Chocobo chocoboGreen = new Chocobo(0, 192, 60, 70);
         Chocobo chocoboBlack = new Chocobo(150, 192, 100, 90);
         Chocobo chocoboGold = new Chocobo(300, 192, 80, 90);

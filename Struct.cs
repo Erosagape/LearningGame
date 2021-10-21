@@ -169,32 +169,20 @@ namespace LearningGame
             spriteBatch.Draw(this.SpriteSource, frameRect, this.SpriteRectangle, Color.White);
         }
     }
-    public class Cell
-    {
-        public int Row;
-        public int Col;
-        public object Value;
-    }
     public class Tile
     {
-        public int Width;
-        public int Height;
-        public int X;
-        public int Y;
+        public int Width, Height, X, Y;
         public Vector2 Position;
         public Tile()
         {
-
         }
         public Tile(int x, int y)
         {
             X = x;
             Y = y;         
         }
-        public Tile(int x,int y,int w,int h)
+        public Tile(int x,int y,int w,int h) : this(x,y)
         {
-            X = x;
-            Y = y;
             Width = w;
             Height = h;
         }
@@ -317,5 +305,10 @@ namespace LearningGame
             }
         }
     }
-
+    public class Cell
+    {
+        public int Row;
+        public int Col;
+        public object Value;
+    }
 }
