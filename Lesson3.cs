@@ -34,7 +34,7 @@ namespace LearningGame
             graphics.PreferredBackBufferWidth = 768;
             graphics.IsFullScreen = false;
             IsMouseVisible = true;
-
+            chocoboYellow = new SpriteCharacter();
             Content.RootDirectory = "Content";
         }
         protected override void Initialize()

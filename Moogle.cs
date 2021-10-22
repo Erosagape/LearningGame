@@ -17,9 +17,9 @@ namespace LearningGame
         public void SetCollision()
         {
             CollisionRectangle = new Rectangle(
-                CurrentPosition.X, CurrentPosition.Y-10,
+                CurrentPosition.X+10, CurrentPosition.Y+15,
                 Width-20,
-                Height-10
+                Height-20
             );
         }
         public Moogle(int X, int Y, int width, int height) : this()

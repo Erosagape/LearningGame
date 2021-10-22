@@ -41,23 +41,30 @@ namespace LearningGame
         {
             Input.Update();
             frameCount += 1;
-            mog.IsAnimated = true;
-            mog.SetSpeed(2, 1);
 
             chocoboYellow.IsAnimated = true;
-            chocoboYellow.SetSpeed(1, 4);            
-            Input.UpdateCharacter(mog);
-            mog.Update(frameCount);
-            mog.SetCollision();
-            chocoboYellow.Update(frameCount);
             chocoboYellow.SetCollision();
+            chocoboYellow.SetSpeed(1, 4);            
+            chocoboYellow.Update(frameCount);
+
+            mog.IsAnimated = true;
+            mog.SetSpeed(2, 1);
+            mog.SetCollision();
+            mog.Update(frameCount);
+
+            Input.UpdateCharacter(mog);
+            mog.OnCollide = mog.IsCollide(chocoboYellow);
             base.Update(gameTime);
         }
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.White);
             Viewport viewPort = graphics.GraphicsDevice.Viewport;
-            string displayText = mog.IsCollide(chocoboYellow) + ": T" + mog.TopOrigin + ",L" + mog.LeftOrigin+ ",R" + mog.RightOrigin + ",B" + mog.BottomOrigin;
+            if (mog.OnCollide == true)
+            {
+                mog.BlockDirection = mog.Direction;
+            }
+            string displayText =mog.OnCollide + ": T" + mog.TopOrigin + ",L" + mog.LeftOrigin+ ",R" + mog.RightOrigin + ",B" + mog.BottomOrigin;
             spriteBatch.Begin();
             chocoboYellow.DrawCenter(viewPort, spriteBatch);
             mog.Draw(viewPort, spriteBatch,Vector2.Zero);
@@ -69,7 +76,7 @@ namespace LearningGame
                 Color.Black
                 );
 
-            displayText = mog.OnCollide + ": T" + chocoboYellow.TopOrigin + ",L" + chocoboYellow.LeftOrigin + ",R" + chocoboYellow.RightOrigin + ",B" + chocoboYellow.BottomOrigin;
+            displayText = mog.BlockDirection + ": T" + chocoboYellow.TopOrigin + ",L" + chocoboYellow.LeftOrigin + ",R" + chocoboYellow.RightOrigin + ",B" + chocoboYellow.BottomOrigin;
             spriteBatch.DrawString(
                 spriteFont,
                 displayText,

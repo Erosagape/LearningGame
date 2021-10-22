@@ -12,7 +12,7 @@ namespace LearningGame
     }
     public enum SpriteDirection
     {
-        MoveDown = 0, MoveLeft = 1, MoveRight = 2, MoveUp = 3
+        NoMove=-1,MoveDown = 0, MoveLeft = 1, MoveRight = 2, MoveUp = 3
     }
     public class SpriteCharacter
     {
@@ -23,6 +23,7 @@ namespace LearningGame
         public Vector2 SpritePosition;
         public SpriteAnimation Animation;
         public SpriteDirection Direction;
+        public SpriteDirection BlockDirection =SpriteDirection.NoMove;
         public int SpriteCols;
         public int SpriteRows;
         public int OriginX;
@@ -64,7 +65,8 @@ namespace LearningGame
         public bool IsMove;
         public bool IsAnimated;
         public bool IsPlayer;
-        public bool OnCollide;
+        public bool OnCollide=false;
+        public bool OnFaceToFace = false;
         public void ChangeAnimation()
         {
             switch (this.Animation)
@@ -100,29 +102,37 @@ namespace LearningGame
         }
         public void MoveUp()
         {
+            if (this.BlockDirection == SpriteDirection.MoveUp) return;
+            this.OnCollide = false;
+            this.BlockDirection = SpriteDirection.NoMove;
             this.IsMove = true;
-            if (OnCollide) return;
             this.Direction = SpriteDirection.MoveUp;            
             this.SpritePosition.Y -= this.WalkSpeed;
         }
         public void MoveDown()
         {
+            if (this.BlockDirection == SpriteDirection.MoveDown) return;
+            this.OnCollide = false;
+            this.BlockDirection = SpriteDirection.NoMove;
             this.IsMove = true;
-            if (OnCollide) return;
             this.Direction = SpriteDirection.MoveDown;            
             this.SpritePosition.Y += this.WalkSpeed;
         }
         public void MoveLeft()
         {
+            if (this.BlockDirection == SpriteDirection.MoveLeft) return;
+            this.OnCollide = false;
+            this.BlockDirection = SpriteDirection.NoMove;
             this.IsMove = true;
-            if (OnCollide) return;
             this.Direction = SpriteDirection.MoveLeft;            
             this.SpritePosition.X -= this.WalkSpeed;
         }
         public void MoveRight()
         {
+            if (this.BlockDirection == SpriteDirection.MoveRight) return;
+            this.OnCollide = false;
+            this.BlockDirection = SpriteDirection.NoMove;
             this.IsMove = true;
-            if (OnCollide) return;
             this.Direction = SpriteDirection.MoveRight;
             this.SpritePosition.X += this.WalkSpeed;
         }
@@ -184,6 +194,7 @@ namespace LearningGame
                 );
 
             spriteBatch.Draw(this.SpriteSource, this.DestinationRectangle, this.SourceRectangle, Color.White);
+            //spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
         }
 
         public void DrawCenter(Viewport vp, SpriteBatch spriteBatch, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
@@ -204,19 +215,35 @@ namespace LearningGame
                 );
 
             spriteBatch.Draw(this.SpriteSource, DestinationRectangle, this.SourceRectangle, Color.White);
+            //spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
         }
         public bool IsCollide(SpriteCharacter compareTo)
         {
-            bool isCollide= compareTo.CollisionRectangle.Intersects(this.CollisionRectangle);
-            if (isCollide)
+            if(this.SpritePosition.X+this.SpritePosition.Y+compareTo.SpritePosition.X+compareTo.SpritePosition.Y > 0)
             {
-                OnCollide = true;
+                OnFaceToFace = false;
+                bool isCollide = compareTo.CollisionRectangle.Intersects(this.CollisionRectangle);
+                if (isCollide)
+                {
+                    switch (compareTo.Direction)
+                    {
+                        case SpriteDirection.MoveUp:
+                            OnFaceToFace = this.Direction == SpriteDirection.MoveDown;
+                            break;
+                        case SpriteDirection.MoveDown:
+                            OnFaceToFace = this.Direction == SpriteDirection.MoveUp;
+                            break;
+                        case SpriteDirection.MoveLeft:
+                            OnFaceToFace = this.Direction == SpriteDirection.MoveRight;
+                            break;
+                        case SpriteDirection.MoveRight:
+                            OnFaceToFace = this.Direction == SpriteDirection.MoveLeft;
+                            break;
+                    }
+                }
+                return isCollide;
             }
-            else
-            {
-                OnCollide = false;
-            }
-            return isCollide;
+            return false;
         }
     }
     public class Tile
