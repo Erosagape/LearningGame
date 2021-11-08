@@ -58,19 +58,19 @@ namespace LearningGame
             {
                 character.Run();
             }
-            if (Input.IsKeyDown(Keys.W))
+            if (Input.IsKeyDown(Keys.W) && character.BlockDirection!=SpriteDirection.MoveUp)
             {
                 character.MoveUp();
             }
-            if (Input.IsKeyDown(Keys.S))
+            if (Input.IsKeyDown(Keys.S) && character.BlockDirection != SpriteDirection.MoveDown)
             {
                 character.MoveDown();
             }
-            if (Input.IsKeyDown(Keys.A))
+            if (Input.IsKeyDown(Keys.A) && character.BlockDirection != SpriteDirection.MoveLeft)
             {
                 character.MoveLeft();
             }
-            if (Input.IsKeyDown(Keys.D))
+            if (Input.IsKeyDown(Keys.D) && character.BlockDirection != SpriteDirection.MoveRight)
             {
                 character.MoveRight();
             }

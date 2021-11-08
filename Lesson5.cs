@@ -43,27 +43,26 @@ namespace LearningGame
             frameCount += 1;
 
             chocoboYellow.IsAnimated = true;
+            //chocoboYellow.ShowCollision = true;
             chocoboYellow.SetCollision();
             chocoboYellow.SetSpeed(1, 4);            
             chocoboYellow.Update(frameCount);
 
             mog.IsAnimated = true;
             mog.SetSpeed(2, 1);
+            //dsmog.ShowCollision = true;
             mog.SetCollision();
             mog.Update(frameCount);
 
-            Input.UpdateCharacter(mog);
             mog.OnCollide = mog.IsCollide(chocoboYellow);
+            Input.UpdateCharacter(mog);
             base.Update(gameTime);
         }
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.White);
             Viewport viewPort = graphics.GraphicsDevice.Viewport;
-            if (mog.OnCollide == true)
-            {
-                mog.BlockDirection = mog.Direction;
-            }
+
             string displayText =mog.OnCollide + ": T" + mog.TopOrigin + ",L" + mog.LeftOrigin+ ",R" + mog.RightOrigin + ",B" + mog.BottomOrigin;
             spriteBatch.Begin();
             chocoboYellow.DrawCenter(viewPort, spriteBatch);
@@ -80,7 +79,7 @@ namespace LearningGame
             spriteBatch.DrawString(
                 spriteFont,
                 displayText,
-                new Vector2((viewPort.Width - spriteFont.MeasureString(displayText).X), viewPort.Height- spriteFont.MeasureString(displayText).Y),
+                new Vector2((viewPort.Width - spriteFont.MeasureString(displayText).X), spriteFont.MeasureString(displayText).Y),
                 Color.Red
                 );
 

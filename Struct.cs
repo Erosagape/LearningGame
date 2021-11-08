@@ -67,6 +67,7 @@ namespace LearningGame
         public bool IsPlayer;
         public bool OnCollide=false;
         public bool OnFaceToFace = false;
+        public bool ShowCollision = false;
         public void ChangeAnimation()
         {
             switch (this.Animation)
@@ -102,8 +103,6 @@ namespace LearningGame
         }
         public void MoveUp()
         {
-            if (this.BlockDirection == SpriteDirection.MoveUp) return;
-            this.OnCollide = false;
             this.BlockDirection = SpriteDirection.NoMove;
             this.IsMove = true;
             this.Direction = SpriteDirection.MoveUp;            
@@ -111,8 +110,6 @@ namespace LearningGame
         }
         public void MoveDown()
         {
-            if (this.BlockDirection == SpriteDirection.MoveDown) return;
-            this.OnCollide = false;
             this.BlockDirection = SpriteDirection.NoMove;
             this.IsMove = true;
             this.Direction = SpriteDirection.MoveDown;            
@@ -120,8 +117,6 @@ namespace LearningGame
         }
         public void MoveLeft()
         {
-            if (this.BlockDirection == SpriteDirection.MoveLeft) return;
-            this.OnCollide = false;
             this.BlockDirection = SpriteDirection.NoMove;
             this.IsMove = true;
             this.Direction = SpriteDirection.MoveLeft;            
@@ -129,8 +124,6 @@ namespace LearningGame
         }
         public void MoveRight()
         {
-            if (this.BlockDirection == SpriteDirection.MoveRight) return;
-            this.OnCollide = false;
             this.BlockDirection = SpriteDirection.NoMove;
             this.IsMove = true;
             this.Direction = SpriteDirection.MoveRight;
@@ -194,7 +187,8 @@ namespace LearningGame
                 );
 
             spriteBatch.Draw(this.SpriteSource, this.DestinationRectangle, this.SourceRectangle, Color.White);
-            //spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
+            if(ShowCollision)
+                spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
         }
 
         public void DrawCenter(Viewport vp, SpriteBatch spriteBatch, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
@@ -215,7 +209,8 @@ namespace LearningGame
                 );
 
             spriteBatch.Draw(this.SpriteSource, DestinationRectangle, this.SourceRectangle, Color.White);
-            //spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
+            if(ShowCollision)
+                spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
         }
         public bool IsCollide(SpriteCharacter compareTo)
         {
@@ -225,6 +220,44 @@ namespace LearningGame
                 bool isCollide = compareTo.CollisionRectangle.Intersects(this.CollisionRectangle);
                 if (isCollide)
                 {
+                    if(this.CollisionRectangle.X>=(compareTo.CollisionRectangle.X) &&
+                        this.CollisionRectangle.X <= (compareTo.CollisionRectangle.X + compareTo.CollisionRectangle.Width) && 
+                        this.CollisionRectangle.Y >(compareTo.CollisionRectangle.Y +(compareTo.CollisionRectangle.Height/2)) &&
+                        this.CollisionRectangle.Y <=(compareTo.CollisionRectangle.Y+compareTo.CollisionRectangle.Height)
+                        )
+                    {
+                        //collision from down prevent from up
+                        this.BlockDirection = SpriteDirection.MoveUp;
+
+                    }
+                    if (this.CollisionRectangle.X >= (compareTo.CollisionRectangle.X) &&
+                        this.CollisionRectangle.X <= (compareTo.CollisionRectangle.X + compareTo.CollisionRectangle.Width) &&
+                        (this.CollisionRectangle.Y+this.CollisionRectangle.Height) < (compareTo.CollisionRectangle.Y + (compareTo.CollisionRectangle.Height / 2)) &&
+                        (this.CollisionRectangle.Y+this.CollisionRectangle.Height) >= (compareTo.CollisionRectangle.Y)
+                        )
+                    {
+                        //collision from up prevent from down
+                        this.BlockDirection = SpriteDirection.MoveDown;
+
+                    }
+                    if (this.CollisionRectangle.X <= (compareTo.CollisionRectangle.X+ compareTo.CollisionRectangle.Width) &&
+                        this.CollisionRectangle.X > (compareTo.CollisionRectangle.X + (compareTo.CollisionRectangle.Width/2)) &&
+                        this.CollisionRectangle.Y >= (compareTo.CollisionRectangle.Y) &&
+                        this.CollisionRectangle.Y <= (compareTo.CollisionRectangle.Y + compareTo.CollisionRectangle.Height)
+                        )
+                    {
+                        //collision from Right prevent move left
+                        this.BlockDirection = SpriteDirection.MoveLeft;
+                    }
+                    if ((this.CollisionRectangle.X+ this.CollisionRectangle.Width) < (compareTo.CollisionRectangle.X+(compareTo.CollisionRectangle.Width/2)) &&
+                        (this.CollisionRectangle.X + this.CollisionRectangle.Width) >= (compareTo.CollisionRectangle.X) &&
+                        (this.CollisionRectangle.Y + this.CollisionRectangle.Height) >= (compareTo.CollisionRectangle.Y) &&
+                        (this.CollisionRectangle.Y + this.CollisionRectangle.Height) <= (compareTo.CollisionRectangle.Y + compareTo.CollisionRectangle.Height)
+                        )
+                    {
+                        //collision from left prevent move right
+                        this.BlockDirection = SpriteDirection.MoveRight;
+                    }
                     switch (compareTo.Direction)
                     {
                         case SpriteDirection.MoveUp:
