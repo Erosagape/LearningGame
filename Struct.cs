@@ -29,34 +29,6 @@ namespace LearningGame
         public int OriginX;
         public int OriginY;
         public Point CurrentPosition;
-        public Point TopOrigin
-        {
-            get
-            {
-                return new Point((CollisionRectangle.X+CollisionRectangle.Width)/2, CollisionRectangle.Y);
-            }
-        }
-        public Point RightOrigin
-        {
-            get
-            {
-                return new Point(CollisionRectangle.X + CollisionRectangle.Width, (CollisionRectangle.Y + CollisionRectangle.Height)/2);
-            }
-        }
-        public Point LeftOrigin
-        {
-            get
-            {
-                return new Point(CollisionRectangle.X, (CollisionRectangle.Y + CollisionRectangle.Height) / 2);
-            }
-        }
-        public Point BottomOrigin
-        {
-            get
-            {
-                return new Point((CollisionRectangle.X + CollisionRectangle.Width)/2, CollisionRectangle.Y + CollisionRectangle.Height);
-            }
-        }
         public int WalkSpeed;
         public int RunSpeed;
         public int AnimationSpeed;
@@ -169,6 +141,18 @@ namespace LearningGame
                 spriteWidth, spriteHeight
                 );
         }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            this.DestinationRectangle = new Rectangle(
+                CurrentPosition.X, CurrentPosition.Y,
+                Width,
+                Height
+                );
+
+            spriteBatch.Draw(this.SpriteSource, this.DestinationRectangle, this.SourceRectangle, Color.White);
+            if (ShowCollision)
+                spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
+        }
         public void Draw(Viewport vp, SpriteBatch spriteBatch, Vector2 position, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
         {
             int spaceWidth = (int)(vp.Width - Width);
@@ -179,16 +163,7 @@ namespace LearningGame
 
             CurrentPosition.X = MathHelper.Clamp(calPositionX, limitLeft, spaceWidth - limitRight);
             CurrentPosition.Y = MathHelper.Clamp(calPositionY, limitUp, spaceHeight - limitDown);
-
-            this.DestinationRectangle = new Rectangle(
-                CurrentPosition.X, CurrentPosition.Y,
-                Width,
-                Height
-                );
-
-            spriteBatch.Draw(this.SpriteSource, this.DestinationRectangle, this.SourceRectangle, Color.White);
-            if(ShowCollision)
-                spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
+            this.Draw(spriteBatch);
         }
 
         public void DrawCenter(Viewport vp, SpriteBatch spriteBatch, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
@@ -202,15 +177,7 @@ namespace LearningGame
             CurrentPosition.X = MathHelper.Clamp(calPositionX, limitLeft, spaceWidth - limitRight);
             CurrentPosition.Y = MathHelper.Clamp(calPositionY, limitUp, spaceHeight - limitDown);
 
-            DestinationRectangle = new Rectangle(
-                CurrentPosition.X, CurrentPosition.Y,
-                Width,
-                Height
-                );
-
-            spriteBatch.Draw(this.SpriteSource, DestinationRectangle, this.SourceRectangle, Color.White);
-            if(ShowCollision)
-                spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
+            this.Draw(spriteBatch);
         }
         public bool IsCollide(SpriteCharacter compareTo)
         {

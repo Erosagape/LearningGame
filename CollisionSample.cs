@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 namespace LearningGame
 {
-    public class Lesson5 : Game
+    public class CollisionSample : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -14,7 +14,7 @@ namespace LearningGame
         Rectangle[] objectRects;
         Vector2 motion = Vector2.Zero;
         string currentPos = "Player={0}";
-        public Lesson5()
+        public CollisionSample()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1366;
