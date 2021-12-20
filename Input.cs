@@ -5,15 +5,73 @@ using System.Text;
 
 namespace LearningGame
 {
+    public enum DirectionState
+    {
+        NoDirection,
+        LeftButtonKeyDown,
+        RightButtonKeyDown,
+        UpButtonKeyDown,
+        DownButtonKeyDown,
+        LeftButtonKeyPress,
+        RightButtonKeyPress,
+        UpButtonKeyPress,
+        DownButtonKeyPress,
+        LeftButtonKeyHold,
+        RightButtonKeyHold,
+        UpButtonKeyHold,
+        DownButtonKeyHold,
+    }
     static class Input
     {
-        public static KeyboardState previousKeyState;
-        public static KeyboardState currentKeyState;
+        private static KeyboardState previousKeyState;
+        private static KeyboardState currentKeyState;
+        private static DirectionState directionState;
+        public static void Reset()
+        {
+            directionState = DirectionState.NoDirection;
+        }
         public static void Update()
         {
             previousKeyState = currentKeyState;
             currentKeyState = Keyboard.GetState();
+            if (Input.IsKeyPress(Keys.W))
+            {
+                directionState = DirectionState.UpButtonKeyPress;
+                Input.Reset();
+            }
+            if (Input.IsKeyPress(Keys.S))
+            {
+                directionState = DirectionState.DownButtonKeyPress;
+                Input.Reset();
+            }
+            if (Input.IsKeyPress(Keys.A))
+            {
+                directionState = DirectionState.LeftButtonKeyPress;
+                Input.Reset();
+            }
+            if (Input.IsKeyPress(Keys.D))
+            {
+                directionState = DirectionState.RightButtonKeyPress;
+                Input.Reset();
+            }
+            if (Input.IsKeyDown(Keys.W))
+            {
+                directionState = DirectionState.UpButtonKeyDown;
+            }
+            if (Input.IsKeyDown(Keys.S))
+            {
+                directionState = DirectionState.DownButtonKeyDown;
+            }
+            if (Input.IsKeyDown(Keys.A))
+            {
+                directionState = DirectionState.LeftButtonKeyDown;
+            }
+            if (Input.IsKeyDown(Keys.D))
+            {
+                directionState = DirectionState.RightButtonKeyDown;
+            }
         }
+        public static DirectionState CurrentDirection => directionState;
         public static bool IsKeyPress(Keys key)
         {
             return currentKeyState.IsKeyUp(key) && previousKeyState.IsKeyDown(key);
@@ -26,55 +84,5 @@ namespace LearningGame
         {
             return previousKeyState.IsKeyDown(key) && currentKeyState.IsKeyDown(key);
         }
-        public static void UpdateCharacter(SpriteCharacter character)
-        {
-            //Check Face Angle 
-            if (Input.IsKeyPress(Keys.Up) || Input.IsKeyPress(Keys.Down) || Input.IsKeyPress(Keys.Left) || Input.IsKeyPress(Keys.Right))
-            {
-                character.Animation = SpriteAnimation.Stand;
-                if (Input.IsKeyPress(Keys.Up))
-                {
-                    character.Direction = SpriteDirection.MoveUp;
-                }
-                if (Input.IsKeyPress(Keys.Down))
-                {
-                    character.Direction = SpriteDirection.MoveDown;
-                }
-                if (Input.IsKeyPress(Keys.Left))
-                {
-                    character.Direction = SpriteDirection.MoveLeft;
-                }
-                if (Input.IsKeyPress(Keys.Right))
-                {
-                    character.Direction = SpriteDirection.MoveRight;
-                }
-            }
-            character.IsMove = false;
-            //Check Walking animation
-            if (Input.IsKeyHold(Keys.W)
-            || Input.IsKeyHold(Keys.S)
-            || Input.IsKeyHold(Keys.A)
-            || Input.IsKeyHold(Keys.D))
-            {
-                character.Run();
-            }
-            if (Input.IsKeyDown(Keys.W) && character.BlockDirection!=SpriteDirection.MoveUp)
-            {
-                character.MoveUp();
-            }
-            if (Input.IsKeyDown(Keys.S) && character.BlockDirection != SpriteDirection.MoveDown)
-            {
-                character.MoveDown();
-            }
-            if (Input.IsKeyDown(Keys.A) && character.BlockDirection != SpriteDirection.MoveLeft)
-            {
-                character.MoveLeft();
-            }
-            if (Input.IsKeyDown(Keys.D) && character.BlockDirection != SpriteDirection.MoveRight)
-            {
-                character.MoveRight();
-            }
-
-        } 
     }
 }

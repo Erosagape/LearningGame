@@ -1,10 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace LearningGame
 {
     public class Lesson5 : Game
@@ -12,9 +8,12 @@ namespace LearningGame
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont spriteFont;
-        Chocobo chocoboYellow = new Chocobo(0, 0, 120, 100);
-        Moogle mog = new Moogle(0, 0, 60, 70);
-        int frameCount = 0;
+        Texture2D playerBox;
+        Rectangle playerRect;
+        Texture2D[] objectBoxs;
+        Rectangle[] objectRects;
+        Vector2 motion = Vector2.Zero;
+        string currentPos = "Player={0}";
         public Lesson5()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -33,56 +32,110 @@ namespace LearningGame
         {
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             spriteFont = Content.Load<SpriteFont>("Fonts/defaultfont");
-            mog.SpriteSource = Content.Load<Texture2D>("moogle1");
-            chocoboYellow.SpriteSource = Content.Load<Texture2D>("chocobo");
+
+            playerBox = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            playerBox.SetData(new Color[] { Color.Black });
+            playerRect = new Rectangle(10, 10, 30, 40);
+
+            objectBoxs = new Texture2D[5];
+            objectRects = new Rectangle[5];
+
+            for (int i = 0; i < 5; i++)
+            {
+                objectBoxs[i] = new Texture2D(graphics.GraphicsDevice, 1, 1);
+                objectBoxs[i].SetData(new Color[] { Color.Blue });                
+            }
+            objectRects[0] = new Rectangle(150, 150, 30, 40);
+            objectRects[1] = new Rectangle(150+ 60, 150 + 40, 30, 40);
+            objectRects[2] = new Rectangle(150 + 125, 150 + 80, 30, 40);
+            objectRects[3] = new Rectangle(150 + 210, 150 + 120, 30, 40);
+            objectRects[4] = new Rectangle(150 + 240, 150 + 160, 30, 40);
+
+            motion = new Vector2(playerRect.X, playerRect.Y);
+
             base.LoadContent();
         }
         protected override void Update(GameTime gameTime)
         {
             Input.Update();
-            frameCount += 1;
 
-            chocoboYellow.IsAnimated = true;
-            //chocoboYellow.ShowCollision = true;
-            chocoboYellow.SetCollision();
-            chocoboYellow.SetSpeed(1, 4);            
-            chocoboYellow.Update(frameCount);
+            Vector2 currentPos = motion;
+            if(Input.CurrentDirection==DirectionState.UpButtonKeyDown||
+                Input.CurrentDirection == DirectionState.UpButtonKeyPress||
+                Input.CurrentDirection == DirectionState.UpButtonKeyHold)
+            {
+                motion.Y -= 1;
+            }
 
-            mog.IsAnimated = true;
-            mog.SetSpeed(2, 1);
-            //dsmog.ShowCollision = true;
-            mog.SetCollision();
-            mog.Update(frameCount);
+            if (Input.CurrentDirection == DirectionState.DownButtonKeyDown ||
+    Input.CurrentDirection == DirectionState.DownButtonKeyPress ||
+    Input.CurrentDirection == DirectionState.DownButtonKeyHold)
+            {
+                motion.Y += 1;
+            }
 
-            mog.OnCollide = mog.IsCollide(chocoboYellow);
-            Input.UpdateCharacter(mog);
+            if (Input.CurrentDirection == DirectionState.LeftButtonKeyDown ||
+Input.CurrentDirection == DirectionState.LeftButtonKeyPress ||
+Input.CurrentDirection == DirectionState.LeftButtonKeyHold)
+            {
+                motion.X -= 1;
+            }
+
+            if (Input.CurrentDirection == DirectionState.RightButtonKeyDown ||
+Input.CurrentDirection == DirectionState.RightButtonKeyPress ||
+Input.CurrentDirection == DirectionState.RightButtonKeyHold)
+            {
+                motion.X += 1;
+            }
+            
+            motion.X = MathHelper.Clamp(motion.X, 0, graphics.GraphicsDevice.Viewport.Width - playerRect.Width);
+            motion.Y = MathHelper.Clamp(motion.Y, 0, graphics.GraphicsDevice.Viewport.Height - playerRect.Height);
+
+            Rectangle collision = new Rectangle(
+                (int)motion.X,
+                (int)motion.Y,
+                playerRect.Width,
+                playerRect.Height);
+            
+            bool isCollide = false;
+            for(int i = 0; i < 5; i++)
+            {
+                if (collision.Intersects(objectRects[i]))
+                {
+                    objectBoxs[i].SetData(new Color[] { Color.Red });
+                    isCollide = true;
+                } else
+                {
+                    objectBoxs[i].SetData(new Color[] { Color.Blue });
+                }
+            }
+            if (isCollide)
+            {
+                motion = currentPos;
+            }
+
+            playerRect.X = (int)motion.X;
+            playerRect.Y = (int)motion.Y;
+
             base.Update(gameTime);
         }
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.White);
+            graphics.GraphicsDevice.Clear(Color.Chocolate);
             Viewport viewPort = graphics.GraphicsDevice.Viewport;
 
-            string displayText =mog.OnCollide + ": T" + mog.TopOrigin + ",L" + mog.LeftOrigin+ ",R" + mog.RightOrigin + ",B" + mog.BottomOrigin;
             spriteBatch.Begin();
-            chocoboYellow.DrawCenter(viewPort, spriteBatch);
-            mog.Draw(viewPort, spriteBatch,Vector2.Zero);
-            
             spriteBatch.DrawString(
-                spriteFont, 
-                displayText,
-                new Vector2((viewPort.Width - spriteFont.MeasureString(displayText).X), 0),
-                Color.Black
-                );
+                spriteFont,                                
+                "Key=" + Input.CurrentDirection + " " + String.Format(currentPos, motion.X + "/" + motion.Y), 
+                Vector2.Zero, 
+                Color.Black);
 
-            displayText = mog.BlockDirection + ": T" + chocoboYellow.TopOrigin + ",L" + chocoboYellow.LeftOrigin + ",R" + chocoboYellow.RightOrigin + ",B" + chocoboYellow.BottomOrigin;
-            spriteBatch.DrawString(
-                spriteFont,
-                displayText,
-                new Vector2((viewPort.Width - spriteFont.MeasureString(displayText).X), spriteFont.MeasureString(displayText).Y),
-                Color.Red
-                );
-
+            spriteBatch.Draw(playerBox, playerRect, Color.White);
+            for(int i = 0; i < 5; i++)
+            {
+                spriteBatch.Draw(objectBoxs[i], objectRects[i], Color.White);
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
