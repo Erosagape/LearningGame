@@ -147,11 +147,14 @@ namespace LearningGame
                 CurrentPosition.X, CurrentPosition.Y,
                 Width,
                 Height
-                );
-
-            spriteBatch.Draw(this.SpriteSource, this.DestinationRectangle, this.SourceRectangle, Color.White);
+                );            
             if (ShowCollision)
-                spriteBatch.Draw(this.SpriteSource, CollisionRectangle, this.SourceRectangle, Color.Blue);
+            {
+                Texture2D collideBox = new Texture2D(this.SpriteSource.GraphicsDevice, 1, 1);
+                collideBox.SetData(new Color[] { Color.Blue });
+                spriteBatch.Draw(collideBox, CollisionRectangle, Color.White);
+            }
+            spriteBatch.Draw(this.SpriteSource, this.DestinationRectangle, this.SourceRectangle, Color.White);
         }
         public void Draw(Viewport vp, SpriteBatch spriteBatch, Vector2 position, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
         {

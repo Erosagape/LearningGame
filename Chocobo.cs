@@ -28,9 +28,9 @@ namespace LearningGame
         public void SetCollision()
         {
             CollisionRectangle = new Rectangle(
-                CurrentPosition.X+10, CurrentPosition.Y+15,
-                Width-20,
-                Height-20
+                CurrentPosition.X+20, CurrentPosition.Y+10,
+                Width-40,
+                Height-10
             );
         }
     }
