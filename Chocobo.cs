@@ -12,6 +12,8 @@ namespace LearningGame
             SpriteCols = 12;
             SpriteRows = 8;
             AnimationSpeed = 20;
+            IsPlayer = false;
+            IsAnimated = true;
         }        
         public Chocobo(int X,int Y,int width,int height) :this()
         {
@@ -25,13 +27,33 @@ namespace LearningGame
             WalkSpeed = walkSpeed;
             RunSpeed = runSpeed;
         }
-        public void SetCollision()
+        public override void SetCollision()
         {
-            CollisionRectangle = new Rectangle(
-                CurrentPosition.X+20, CurrentPosition.Y+10,
-                Width-40,
-                Height-10
-            );
+            switch (this.Direction)
+            {
+                case SpriteDirection.MoveUp:
+                    AdjustX = -1*(int)(this.Width * 0.2f);
+                    AdjustY = -1 * (int)(this.Height * 0.1f);
+                    AdjustWidth = (int)(this.Width * 0.3f);
+                    AdjustHeight = (int)(this.Height * 0.1f);
+                    break;
+                case SpriteDirection.MoveDown:
+                    AdjustX = -1*(int)(this.Width * 0.2f);
+                    AdjustY = -1 * (int)(this.Height * 0.1f);
+                    AdjustWidth = (int)(this.Width * 0.5f);
+                    AdjustHeight = (int)(this.Height * 0.1f);
+                    break;
+                case SpriteDirection.MoveLeft:
+                    AdjustY = -(int)(this.Width * 0.1f);
+                    AdjustHeight = (int)(this.Height * 0.2f);
+                    break;
+                case SpriteDirection.MoveRight:
+                    AdjustX = -(int)(this.Width * 0.2f);
+                    AdjustY = -(int)(this.Width * 0.1f);
+                    AdjustWidth = (int)(this.Width * 0.3f);
+                    AdjustHeight = (int)(this.Height * 0.2f);
+                    break;
+            }
         }
     }
 }

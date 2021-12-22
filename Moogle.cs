@@ -14,13 +14,11 @@ namespace LearningGame
             SpriteRows = 4;
             AnimationSpeed = 10;
         }
-        public void SetCollision()
+        public Moogle(int width,int height) : this(0,0,width,height)
         {
-            CollisionRectangle = new Rectangle(
-                CurrentPosition.X+10, CurrentPosition.Y+15,
-                Width-20,
-                Height-20
-            );
+            this.Direction = SpriteDirection.MoveDown;
+            this.IsPlayer = false;
+            this.IsAnimated = true;
         }
         public Moogle(int X, int Y, int width, int height) : this()
         {

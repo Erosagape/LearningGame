@@ -84,5 +84,29 @@ namespace LearningGame
         {
             return previousKeyState.IsKeyDown(key) && currentKeyState.IsKeyDown(key);
         }
+        public static bool IsUpDirection()
+        {
+            return directionState == DirectionState.UpButtonKeyDown ||
+                directionState == DirectionState.UpButtonKeyPress ||
+                directionState == DirectionState.UpButtonKeyHold;
+        }
+        public static bool IsDownDirection()
+        {
+            return directionState == DirectionState.DownButtonKeyDown ||
+                directionState == DirectionState.DownButtonKeyPress ||
+                directionState == DirectionState.DownButtonKeyHold;
+        }
+        public static bool IsLeftDirection()
+        {
+            return directionState == DirectionState.LeftButtonKeyDown ||
+                directionState == DirectionState.LeftButtonKeyPress ||
+                directionState == DirectionState.LeftButtonKeyHold;
+        }
+        public static bool IsRightDirection()
+        {
+            return directionState == DirectionState.RightButtonKeyDown ||
+                directionState == DirectionState.RightButtonKeyPress ||
+                directionState == DirectionState.RightButtonKeyHold;
+        }
     }
 }
