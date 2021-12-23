@@ -5,6 +5,22 @@ using System.Text;
 
 namespace LearningGame
 {
+    public enum ActionState
+    {
+        NoAction,
+        ActionButtonKeyDown,
+        ActionButtonKeyPress,
+        BackButtonKeyDown,
+        BackButtonKeyPress,
+        SkillButtonKeyDown,
+        SkillButtonKeyPress,
+        MenuButtonKeyDown,
+        MenuButtonKeyPress,
+        StartButtonKeyDown,
+        StartButtonKeyPress,
+        SelectButtonKeyDown,
+        SelectButtonKeyPress,        
+    }
     public enum DirectionState
     {
         NoDirection,
@@ -26,9 +42,11 @@ namespace LearningGame
         private static KeyboardState previousKeyState;
         private static KeyboardState currentKeyState;
         private static DirectionState directionState;
+        private static ActionState actionState;
         public static void Reset()
         {
             directionState = DirectionState.NoDirection;
+            actionState = ActionState.NoAction;
         }
         public static void Update()
         {
@@ -54,6 +72,10 @@ namespace LearningGame
                 directionState = DirectionState.RightButtonKeyPress;
                 Input.Reset();
             }
+            if (Input.IsKeyPress(Keys.Enter))
+            {
+                actionState = ActionState.ActionButtonKeyPress;
+            }
             if (Input.IsKeyDown(Keys.W))
             {
                 directionState = DirectionState.UpButtonKeyDown;
@@ -69,6 +91,10 @@ namespace LearningGame
             if (Input.IsKeyDown(Keys.D))
             {
                 directionState = DirectionState.RightButtonKeyDown;
+            }
+            if (Input.IsKeyDown(Keys.Enter))
+            {
+                actionState = ActionState.ActionButtonKeyDown;
             }
         }
         public static DirectionState CurrentDirection => directionState;
@@ -107,6 +133,11 @@ namespace LearningGame
             return directionState == DirectionState.RightButtonKeyDown ||
                 directionState == DirectionState.RightButtonKeyPress ||
                 directionState == DirectionState.RightButtonKeyHold;
+        }
+        public static bool IsActionButtonPressed()
+        {
+            return actionState==ActionState.ActionButtonKeyDown ||
+                actionState== ActionState.ActionButtonKeyPress;
         }
     }
 }

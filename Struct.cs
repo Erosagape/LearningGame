@@ -188,12 +188,62 @@ namespace LearningGame
         }
         public bool IsCollide(SpriteCharacter compareTo)
         {
-            bool bCollide= this.GetCollision().Intersects(compareTo.GetCollision());
-            if (bCollide)
+            bool bCollide= false;
+            if (this.GetCollision().Intersects(compareTo.GetCollision()))
             {
+                bCollide = true;
                 compareTo.IsAnimated = false;
             }
             return bCollide;
+        }
+        public bool IsFaceToFace(SpriteCharacter compareTo)
+        {
+            Rectangle playerRect = this.GetCollision();
+            Rectangle npcRect = compareTo.GetCollision();
+            if (playerRect.Intersects(npcRect))
+            {
+                SpriteDirection faceDirection = SpriteDirection.NoMove;
+                switch (this.Direction)
+                {
+                    case SpriteDirection.MoveUp:
+                        faceDirection = SpriteDirection.MoveDown;
+                        break;
+                    case SpriteDirection.MoveDown:
+                        faceDirection = SpriteDirection.MoveUp;
+                        break;
+                    case SpriteDirection.MoveLeft:
+                        faceDirection = SpriteDirection.MoveRight;
+                        break;
+                    case SpriteDirection.MoveRight:
+                        faceDirection = SpriteDirection.MoveLeft;
+                        break;
+                }
+                if (compareTo.Direction == faceDirection)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public Point GetFacePoint()
+        {
+            Point facePoint = new Point(0, 0);
+            switch (this.Direction)
+            {
+                case SpriteDirection.MoveUp:
+                    facePoint = new Point(this.CollisionRectangle.X + (this.CollisionRectangle.Width / 2), this.CollisionRectangle.Y);  ;
+                    break;
+                case SpriteDirection.MoveDown:
+                    facePoint = new Point(this.CollisionRectangle.X + (this.CollisionRectangle.Width / 2), this.CollisionRectangle.Y+(this.CollisionRectangle.Height));
+                    break;
+                case SpriteDirection.MoveLeft:
+                    facePoint = new Point(this.CollisionRectangle.X, this.CollisionRectangle.Y + (this.CollisionRectangle.Height / 2));
+                    break;
+                case SpriteDirection.MoveRight:
+                    facePoint = new Point(this.CollisionRectangle.X + this.CollisionRectangle.Width, this.CollisionRectangle.Y+(this.CollisionRectangle.Height/2));
+                    break;
+            }
+            return facePoint;
         }
         public virtual void SetCollision()
         {

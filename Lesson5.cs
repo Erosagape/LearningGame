@@ -13,6 +13,12 @@ namespace LearningGame
         SpriteFont spriteFont;
 
         Texture2D backgroundSource;
+
+        Texture2D conversationBorderSource;
+        Texture2D conversationSource;
+        Rectangle conversationBorderBox;
+        Rectangle conversationBox;
+
         TileSet surface;
 
         Chocobo chocoboYellow = new Chocobo(0, 0, 120, 100);
@@ -29,11 +35,14 @@ namespace LearningGame
         SpriteCharacter[] npcs;
         int frameCount;
 
+        bool isEnter = false;
+        bool isShowDialog = false;
+        string collideTo = "";
         public Lesson5()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1366;
-            graphics.PreferredBackBufferWidth = 768;
+            graphics.PreferredBackBufferHeight = 768;
             graphics.IsFullScreen = false;
             IsMouseVisible = true;
 
@@ -41,7 +50,6 @@ namespace LearningGame
         }
         protected override void Initialize()
         {
-            /*
             mog.ShowCollision = true;
             chocoboYellow.ShowCollision = true;
             chocoboWhite.ShowCollision = true;
@@ -51,16 +59,16 @@ namespace LearningGame
             chocoboGold.ShowCollision = true;
             chocoboRed.ShowCollision = true;
             chocoboOrange.ShowCollision = true;
-            */
+
             mog.Name = "Mog";
-            chocoboYellow.Name= "BananaChoc";
-            chocoboWhite.Name = "WhiteChoc";
-            chocoboBlue.Name = "SkyChoc";
-            chocoboBlack.Name = "DarkChoc";
-            chocoboGreen.Name = "GreenChoc";
-            chocoboGold.Name = "GoldChoc";
-            chocoboRed.Name = "RedChoc";
-            chocoboOrange.Name = "OrangeChoc";
+            chocoboYellow.Name= "BananaChoco";
+            chocoboWhite.Name = "WhiteChoco";
+            chocoboBlue.Name = "SkyChoco";
+            chocoboBlack.Name = "DarkChoco";
+            chocoboGreen.Name = "GreenChoco";
+            chocoboGold.Name = "GoldChoco";
+            chocoboRed.Name = "RedChoco";
+            chocoboOrange.Name = "OrangeChoco";
 
             chocoboWhite.Direction = SpriteDirection.MoveRight;
             chocoboBlue.Direction = SpriteDirection.MoveRight;
@@ -111,15 +119,21 @@ namespace LearningGame
             
             player.SpriteSource = Content.Load<Texture2D>("moogle1");
 
+            conversationSource = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            conversationSource.SetData(new Color[] { Color.DarkBlue });
+            conversationBorderSource = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            conversationBorderSource.SetData(new Color[] { Color.White });
+            conversationBox = new Rectangle(10, 10, 780, 100);
+            conversationBorderBox = new Rectangle(5, 5, 790, 110);
             base.LoadContent();
         }
         protected override void Update(GameTime gameTime)
         {
             Input.Update();
             frameCount++;
-            Vector2 currentPos = new Vector2(player.CurrentPosition.X,player.CurrentPosition.Y);
+            Vector2 currentPos = new Vector2(player.CurrentPosition.X, player.CurrentPosition.Y);
             if (Input.IsUpDirection())
-            {                
+            {
                 player.ChangeDirection(SpriteDirection.MoveUp);
                 player.CurrentPosition.Y -= 1;
             }
@@ -145,14 +159,18 @@ namespace LearningGame
             player.CurrentPosition.X = MathHelper.Clamp(player.CurrentPosition.X, 0, graphics.GraphicsDevice.Viewport.Width - player.Width);
             player.CurrentPosition.Y = MathHelper.Clamp(player.CurrentPosition.Y, 0, graphics.GraphicsDevice.Viewport.Height - player.Height);
 
+            isEnter = Input.IsKeyDown(Keys.Enter);
+            isShowDialog = false;
             bool isCollide = false;
-            player.InteractionTo = "N/A";
-            foreach(SpriteCharacter npc in npcs)
+            collideTo = "";
+            player.InteractionTo = "";
+            foreach (SpriteCharacter npc in npcs)
             {
                 if (player.IsCollide(npc))
                 {
                     isCollide = true;
-                    player.InteractionTo = npc.Name;                    
+                    collideTo = npc.Name;
+                    player.InteractionTo = player.IsFaceToFace(npc) ? npc.Name +" "+npc.GetFacePoint() : "";
                 }
                 else
                 {
@@ -162,7 +180,8 @@ namespace LearningGame
             if (isCollide)
             {
                 player.CurrentPosition = currentPos.ToPoint();
-            }          
+            }            
+            isShowDialog = (player.InteractionTo != "");
 
             player.Update(frameCount);
             chocoboYellow.Update(frameCount);
@@ -225,7 +244,7 @@ namespace LearningGame
             player.Draw(spriteBatch);
             chocoboYellow.DrawCenter(viewPort, spriteBatch);
             chocoboWhite.Draw(viewPort, spriteBatch, new Vector2(120, 0));
-            chocoboRed.Draw(viewPort, spriteBatch, new Vector2(500, 350));
+            chocoboRed.Draw(viewPort, spriteBatch, new Vector2(500, 330));
             chocoboBlue.Draw(viewPort, spriteBatch, new Vector2(0, 200));
             chocoboGreen.Draw(viewPort, spriteBatch, new Vector2(750, 150));
             chocoboBlack.Draw(viewPort, spriteBatch, new Vector2(0, 500));
@@ -233,13 +252,17 @@ namespace LearningGame
             chocoboOrange.Draw(viewPort, spriteBatch,
                 new Vector2((int)(viewPort.Width - mog.Width) / 2-20, (int)(viewPort.Height - chocoboOrange.Height)-20)
                 );
-            
-            spriteBatch.DrawString(
-                spriteFont,
-                "Key=" + Input.CurrentDirection + " With=" + player.InteractionTo,
-                Vector2.Zero,
-                Color.Black);
 
+            if (isShowDialog)
+            {
+                spriteBatch.Draw(conversationBorderSource, conversationBorderBox, Color.White);
+                spriteBatch.Draw(conversationSource, conversationBox, Color.White);
+                spriteBatch.DrawString(
+                    spriteFont,
+                    player.InteractionTo + " ("+ player.GetFacePoint().ToString() +  ") : Hello! " + player.Name,
+                    new Vector2(20, 20),
+                    Color.White);
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
