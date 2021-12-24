@@ -14,6 +14,13 @@ namespace LearningGame
             SpriteRows = 4;
             AnimationSpeed = 10;
         }
+        public Moogle(int width, int height,string name,SpriteDirection direction) : this(0, 0, width, height)
+        {
+            this.Name = name;
+            this.Direction = direction;
+            this.IsPlayer = false;
+            this.IsAnimated = true;
+        }
         public Moogle(int width,int height) : this(0,0,width,height)
         {
             this.Direction = SpriteDirection.MoveDown;

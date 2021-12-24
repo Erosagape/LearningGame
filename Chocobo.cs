@@ -22,6 +22,12 @@ namespace LearningGame
             Width = width;
             Height = height;
         }
+        public Chocobo(int X, int Y, int width, int height,string name,SpriteDirection direction,Point position) : this(X,Y,width,height)
+        {
+            Name = name;
+            Direction = direction;
+            CurrentPosition = position;
+        }
         public void SetSpeed(int walkSpeed,int runSpeed)
         {
             WalkSpeed = walkSpeed;
@@ -48,9 +54,9 @@ namespace LearningGame
                     AdjustHeight = (int)(this.Height * 0.2f);
                     break;
                 case SpriteDirection.MoveRight:
-                    AdjustX = -(int)(this.Width * 0.2f);
+                    AdjustX = -(int)(this.Width * 0.15f);
                     AdjustY = -(int)(this.Width * 0.1f);
-                    AdjustWidth = (int)(this.Width * 0.3f);
+                    AdjustWidth = (int)(this.Width * 0.2f);
                     AdjustHeight = (int)(this.Height * 0.2f);
                     break;
             }

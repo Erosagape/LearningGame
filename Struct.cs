@@ -150,10 +150,10 @@ namespace LearningGame
                 CurrentPosition.X, CurrentPosition.Y,
                 Width,
                 Height
-                );            
+                );
+            CollisionRectangle = GetCollision();
             if (ShowCollision)
             {
-                CollisionRectangle = GetCollision();
                 Texture2D collideBox = new Texture2D(this.SpriteSource.GraphicsDevice, 1, 1);
                 collideBox.SetData(new Color[] { Color.Blue });
                 spriteBatch.Draw(collideBox, CollisionRectangle, Color.White);
@@ -192,7 +192,6 @@ namespace LearningGame
             if (this.GetCollision().Intersects(compareTo.GetCollision()))
             {
                 bCollide = true;
-                compareTo.IsAnimated = false;
             }
             return bCollide;
         }
@@ -203,27 +202,51 @@ namespace LearningGame
             if (playerRect.Intersects(npcRect))
             {
                 SpriteDirection faceDirection = SpriteDirection.NoMove;
+                Point playerPoint = this.GetFacePoint();
+                bool bOnRange = false;
                 switch (this.Direction)
                 {
                     case SpriteDirection.MoveUp:
                         faceDirection = SpriteDirection.MoveDown;
+                        bOnRange = playerPoint.X >= compareTo.GetFaceRange()[0] && playerPoint.X <= compareTo.GetFaceRange()[1];
                         break;
                     case SpriteDirection.MoveDown:
                         faceDirection = SpriteDirection.MoveUp;
+                        bOnRange = playerPoint.X >= compareTo.GetFaceRange()[0] && playerPoint.X <= compareTo.GetFaceRange()[1];
                         break;
                     case SpriteDirection.MoveLeft:
                         faceDirection = SpriteDirection.MoveRight;
+                        bOnRange = playerPoint.Y >= compareTo.GetFaceRange()[0] && playerPoint.Y <= compareTo.GetFaceRange()[1];
                         break;
                     case SpriteDirection.MoveRight:
                         faceDirection = SpriteDirection.MoveLeft;
+                        bOnRange = playerPoint.Y >= compareTo.GetFaceRange()[0] && playerPoint.Y <= compareTo.GetFaceRange()[1];
                         break;
                 }
                 if (compareTo.Direction == faceDirection)
                 {
-                    return true;
+                    return bOnRange;
                 }
             }
             return false;
+        }
+        public int[] GetFaceRange()
+        {
+            int[] arr = new int[2];
+            switch (this.Direction)
+            {
+                case SpriteDirection.MoveUp:
+                case SpriteDirection.MoveDown:
+                    arr[0] = CollisionRectangle.X;
+                    arr[1] = CollisionRectangle.X + CollisionRectangle.Width;
+                    break;
+                case SpriteDirection.MoveLeft:
+                case SpriteDirection.MoveRight:
+                    arr[0] = CollisionRectangle.Y;
+                    arr[1] = CollisionRectangle.Y + CollisionRectangle.Height;
+                    break;
+            }
+            return arr;
         }
         public Point GetFacePoint()
         {
