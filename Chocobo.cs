@@ -14,6 +14,8 @@ namespace LearningGame
             AnimationSpeed = 20;
             IsPlayer = false;
             IsAnimated = true;
+            WalkSpeed = 1;
+            RunSpeed = 1;
         }        
         public Chocobo(int X,int Y,int width,int height) :this()
         {

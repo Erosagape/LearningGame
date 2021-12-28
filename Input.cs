@@ -48,6 +48,55 @@ namespace LearningGame
             directionState = DirectionState.NoDirection;
             actionState = ActionState.NoAction;
         }
+        public static void UpdateCharacter(SpriteCharacter character)
+        {
+            character.SpritePosition = Microsoft.Xna.Framework.Vector2.Zero;
+            //Check Face Angle 
+            if (IsKeyPress(Keys.Up) || IsKeyPress(Keys.Down) || IsKeyPress(Keys.Left) || IsKeyPress(Keys.Right))
+            {
+                character.Animation = SpriteAnimation.Stand;
+                if (IsKeyPress(Keys.Up))
+                {
+                    character.Direction = SpriteDirection.MoveUp;
+                }
+                if (IsKeyPress(Keys.Down))
+                {
+                    character.Direction = SpriteDirection.MoveDown;
+                }
+                if (IsKeyPress(Keys.Left))
+                {
+                    character.Direction = SpriteDirection.MoveLeft;
+                }
+                if (IsKeyPress(Keys.Right))
+                {
+                    character.Direction = SpriteDirection.MoveRight;
+                }
+            }
+
+            //Check Walking animation
+            character.IsMove = false;
+            if (IsKeyPress(Keys.Enter))
+            {
+                character.IsAnimated = !character.IsAnimated;
+            }
+            if (IsKeyDown(Keys.W))
+            {
+                character.MoveUp();
+            }
+            if (IsKeyDown(Keys.S))
+            {
+                character.MoveDown();
+            }
+            if (IsKeyDown(Keys.A))
+            {
+                character.MoveLeft();
+            }
+            if (IsKeyDown(Keys.D))
+            {
+                character.MoveRight();
+            }
+            character.CurrentPosition = character.CurrentPosition+ character.SpritePosition.ToPoint();
+        }
         public static void Update()
         {
             previousKeyState = currentKeyState;

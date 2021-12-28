@@ -377,29 +377,35 @@ namespace LearningGame
     {
         public Texture2D SpriteSource;
         public TileMap TileMap;
+        public List<Rectangle> CollisionObjects;
         public TileSet(Texture2D source)
         {
+            CollisionObjects = new List<Rectangle>();
             SpriteSource = source;
         }
         public void CreateMap(int rows,int cols)
         {
             TileMap = new TileMap(rows, cols);
         }
-        public void DrawObjects(SpriteBatch spriteBatch,Point[] points,int Wide,int High,Tile tile)
+        public void DrawObjects(SpriteBatch spriteBatch, Point[] points, int Wide, int High, Tile tile, bool AddCollision = false)
         {
             foreach(Point point in points)
             {
                 Rectangle frame = new Rectangle(
                     point, new Point(Wide, High)
                     );
+                if (AddCollision)
+                    CollisionObjects.Add(frame);
                 spriteBatch.Draw(SpriteSource, frame, tile.GetRectangle(), Color.White);
             }
         }
-        public void DrawObject(SpriteBatch spriteBatch, int xDest, int yDest, int Wide, int High, Tile tile)
+        public void DrawObject(SpriteBatch spriteBatch, int xDest, int yDest, int Wide, int High, Tile tile,bool AddCollision=false)
         {
             Rectangle frame = new Rectangle(
                 new Point(xDest, yDest), new Point(Wide, High)
             );
+            if (AddCollision)
+                CollisionObjects.Add(frame);
             spriteBatch.Draw(SpriteSource, frame, tile.GetRectangle(), Color.White);
         }
         public void DrawFloor(SpriteBatch spriteBatch)

@@ -165,24 +165,21 @@ namespace LearningGame
             {
                 character.Run();
             }
-            if (CheckCollision() == false)
+            if (IsKeyDown(Keys.W))
             {
-                if (IsKeyDown(Keys.W))
-                {
-                    character.MoveUp();
-                }
-                if (IsKeyDown(Keys.S))
-                {
-                    character.MoveDown();
-                }
-                if (IsKeyDown(Keys.A))
-                {
-                    character.MoveLeft();
-                }
-                if (IsKeyDown(Keys.D))
-                {
-                    character.MoveRight();
-                }
+                character.MoveUp();
+            }
+            if (IsKeyDown(Keys.S))
+            {
+                character.MoveDown();
+            }
+            if (IsKeyDown(Keys.A))
+            {
+                character.MoveLeft();
+            }
+            if (IsKeyDown(Keys.D))
+            {
+                character.MoveRight();
             }
         }
         private void UpdateState(TimeSpan timePass)

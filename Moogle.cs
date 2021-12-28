@@ -13,6 +13,8 @@ namespace LearningGame
             SpriteCols = 3;
             SpriteRows = 4;
             AnimationSpeed = 10;
+            WalkSpeed = 1;
+            RunSpeed = 1;
         }
         public Moogle(int width, int height,string name,SpriteDirection direction) : this(0, 0, width, height)
         {
