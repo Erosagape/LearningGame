@@ -16,19 +16,6 @@ namespace LearningGame
             WalkSpeed = 1;
             RunSpeed = 1;
         }
-        public Moogle(int width, int height,string name,SpriteDirection direction) : this(0, 0, width, height)
-        {
-            this.Name = name;
-            this.Direction = direction;
-            this.IsPlayer = false;
-            this.IsAnimated = true;
-        }
-        public Moogle(int width,int height) : this(0,0,width,height)
-        {
-            this.Direction = SpriteDirection.MoveDown;
-            this.IsPlayer = false;
-            this.IsAnimated = true;
-        }
         public Moogle(int X, int Y, int width, int height) : this()
         {
             OriginX = X;
@@ -36,6 +23,22 @@ namespace LearningGame
             Width = width;
             Height = height;
         }
+        public Moogle(int width, int height,string name,SpriteDirection direction) 
+            : this(0, 0, width, height)
+        {
+            this.Name = name;
+            this.Direction = direction;
+            this.IsPlayer = false;
+            this.IsAnimated = true;
+        }
+        public Moogle(int width,int height) 
+            : this(0,0,width,height)
+        {
+            this.Direction = SpriteDirection.MoveDown;
+            this.IsPlayer = false;
+            this.IsAnimated = true;
+        }
+        
         public void SetSpeed(int walkSpeed, int runSpeed)
         {
             WalkSpeed = walkSpeed;

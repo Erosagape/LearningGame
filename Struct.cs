@@ -23,22 +23,14 @@ namespace LearningGame
         public Vector2 SpritePosition;
         public SpriteAnimation Animation;
         public SpriteDirection Direction;
-        public int SpriteCols;
-        public int SpriteRows;
-        public int OriginX;
-        public int OriginY;
+        public int SpriteCols,SpriteRows;
+        public int OriginX,OriginY;
         public Point CurrentPosition;
-        public int WalkSpeed;
-        public int RunSpeed;
-        public int AnimationSpeed;
-        public int Width;
-        public int Height;
-        public int AdjustX;
-        public int AdjustY;
-        public int AdjustWidth;
-        public int AdjustHeight;
-        public bool IsMove;
-        public bool IsAnimated;
+        public int WalkSpeed,RunSpeed,AnimationSpeed;
+        public int Width,Height;
+        public int AdjustX,AdjustY;
+        public int AdjustWidth,AdjustHeight;
+        public bool IsMove,IsAnimated;
         public bool IsPlayer;
         public bool ShowCollision = false;
         public string Name;
@@ -160,7 +152,8 @@ namespace LearningGame
             }
             spriteBatch.Draw(this.SpriteSource, this.DestinationRectangle, this.SourceRectangle, Color.White);
         }
-        public void Draw(Viewport vp, SpriteBatch spriteBatch, Vector2 position, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
+        public void Draw(Viewport vp, SpriteBatch spriteBatch, Vector2 position, 
+            int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
         {
             int spaceWidth = (int)(vp.Width - Width);
             int spaceHeight = (int)(vp.Height - Height);
@@ -173,7 +166,8 @@ namespace LearningGame
             this.Draw(spriteBatch);
         }
 
-        public void DrawCenter(Viewport vp, SpriteBatch spriteBatch, int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
+        public void DrawCenter(Viewport vp, SpriteBatch spriteBatch, 
+            int limitLeft = 0, int limitRight = 0, int limitUp = 0, int limitDown = 0)
         {
             int spaceWidth = (int)(vp.Width - Width);
             int spaceHeight = (int)(vp.Height - Height);
@@ -204,25 +198,31 @@ namespace LearningGame
                 SpriteDirection faceDirection = SpriteDirection.NoMove;
                 Point playerPoint = this.GetFacePoint();
                 bool bOnRange = false;
+
                 switch (this.Direction)
                 {
                     case SpriteDirection.MoveUp:
                         faceDirection = SpriteDirection.MoveDown;
-                        bOnRange = playerPoint.X >= compareTo.GetFaceRange()[0] && playerPoint.X <= compareTo.GetFaceRange()[1];
+                        bOnRange = playerPoint.X >= compareTo.GetFaceRange()[0] 
+                            && playerPoint.X <= compareTo.GetFaceRange()[1];
                         break;
                     case SpriteDirection.MoveDown:
                         faceDirection = SpriteDirection.MoveUp;
-                        bOnRange = playerPoint.X >= compareTo.GetFaceRange()[0] && playerPoint.X <= compareTo.GetFaceRange()[1];
+                        bOnRange = playerPoint.X >= compareTo.GetFaceRange()[0] 
+                            && playerPoint.X <= compareTo.GetFaceRange()[1];
                         break;
                     case SpriteDirection.MoveLeft:
                         faceDirection = SpriteDirection.MoveRight;
-                        bOnRange = playerPoint.Y >= compareTo.GetFaceRange()[0] && playerPoint.Y <= compareTo.GetFaceRange()[1];
+                        bOnRange = playerPoint.Y >= compareTo.GetFaceRange()[0] 
+                            && playerPoint.Y <= compareTo.GetFaceRange()[1];
                         break;
                     case SpriteDirection.MoveRight:
                         faceDirection = SpriteDirection.MoveLeft;
-                        bOnRange = playerPoint.Y >= compareTo.GetFaceRange()[0] && playerPoint.Y <= compareTo.GetFaceRange()[1];
+                        bOnRange = playerPoint.Y >= compareTo.GetFaceRange()[0] 
+                            && playerPoint.Y <= compareTo.GetFaceRange()[1];
                         break;
                 }
+
                 if (compareTo.Direction == faceDirection)
                 {
                     return bOnRange;
@@ -254,16 +254,28 @@ namespace LearningGame
             switch (this.Direction)
             {
                 case SpriteDirection.MoveUp:
-                    facePoint = new Point(this.CollisionRectangle.X + (this.CollisionRectangle.Width / 2), this.CollisionRectangle.Y);  ;
+                    facePoint = new Point(
+                        this.CollisionRectangle.X + (this.CollisionRectangle.Width / 2), 
+                        this.CollisionRectangle.Y
+                        );
                     break;
                 case SpriteDirection.MoveDown:
-                    facePoint = new Point(this.CollisionRectangle.X + (this.CollisionRectangle.Width / 2), this.CollisionRectangle.Y+(this.CollisionRectangle.Height));
+                    facePoint = new Point(
+                        this.CollisionRectangle.X + (this.CollisionRectangle.Width / 2), 
+                        this.CollisionRectangle.Y+(this.CollisionRectangle.Height)
+                        );
                     break;
                 case SpriteDirection.MoveLeft:
-                    facePoint = new Point(this.CollisionRectangle.X, this.CollisionRectangle.Y + (this.CollisionRectangle.Height / 2));
+                    facePoint = new Point(
+                        this.CollisionRectangle.X, 
+                        this.CollisionRectangle.Y + (this.CollisionRectangle.Height / 2)
+                        );
                     break;
                 case SpriteDirection.MoveRight:
-                    facePoint = new Point(this.CollisionRectangle.X + this.CollisionRectangle.Width, this.CollisionRectangle.Y+(this.CollisionRectangle.Height/2));
+                    facePoint = new Point(
+                        this.CollisionRectangle.X + this.CollisionRectangle.Width, 
+                        this.CollisionRectangle.Y+(this.CollisionRectangle.Height/2)
+                        );
                     break;
             }
             return facePoint;
@@ -290,9 +302,7 @@ namespace LearningGame
     {
         public int Width, Height, X, Y;
         public Vector2 Position;
-        public Tile()
-        {
-        }
+        public Tile() { }
         public Tile(int x, int y)
         {
             X = x;
@@ -387,7 +397,8 @@ namespace LearningGame
         {
             TileMap = new TileMap(rows, cols);
         }
-        public void DrawObjects(SpriteBatch spriteBatch, Point[] points, int Wide, int High, Tile tile, bool AddCollision = false)
+        public void DrawObjects(SpriteBatch spriteBatch, Point[] points, int Wide, int High, 
+            Tile tile, bool AddCollision = false)
         {
             foreach(Point point in points)
             {
@@ -399,7 +410,8 @@ namespace LearningGame
                 spriteBatch.Draw(SpriteSource, frame, tile.GetRectangle(), Color.White);
             }
         }
-        public void DrawObject(SpriteBatch spriteBatch, int xDest, int yDest, int Wide, int High, Tile tile,bool AddCollision=false)
+        public void DrawObject(SpriteBatch spriteBatch, int xDest, int yDest, int Wide, int High, 
+            Tile tile,bool AddCollision=false)
         {
             Rectangle frame = new Rectangle(
                 new Point(xDest, yDest), new Point(Wide, High)

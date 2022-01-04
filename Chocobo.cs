@@ -17,14 +17,17 @@ namespace LearningGame
             WalkSpeed = 1;
             RunSpeed = 1;
         }        
-        public Chocobo(int X,int Y,int width,int height) :this()
+        public Chocobo(int X,int Y,int width,int height) 
+            :this()
         {
             OriginX = X;
             OriginY = Y;
             Width = width;
             Height = height;
         }
-        public Chocobo(int X, int Y, int width, int height,string name,SpriteDirection direction,Point position) : this(X,Y,width,height)
+        public Chocobo(int X, int Y, int width, int height,
+            string name,SpriteDirection direction,Point position) 
+            : this(X,Y,width,height)
         {
             Name = name;
             Direction = direction;

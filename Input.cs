@@ -10,16 +10,6 @@ namespace LearningGame
         NoAction,
         ActionButtonKeyDown,
         ActionButtonKeyPress,
-        BackButtonKeyDown,
-        BackButtonKeyPress,
-        SkillButtonKeyDown,
-        SkillButtonKeyPress,
-        MenuButtonKeyDown,
-        MenuButtonKeyPress,
-        StartButtonKeyDown,
-        StartButtonKeyPress,
-        SelectButtonKeyDown,
-        SelectButtonKeyPress,        
     }
     public enum DirectionState
     {
@@ -43,6 +33,7 @@ namespace LearningGame
         private static KeyboardState currentKeyState;
         private static DirectionState directionState;
         private static ActionState actionState;
+        public static DirectionState CurrentDirection => directionState;
         public static void Reset()
         {
             directionState = DirectionState.NoDirection;
@@ -146,7 +137,6 @@ namespace LearningGame
                 actionState = ActionState.ActionButtonKeyDown;
             }
         }
-        public static DirectionState CurrentDirection => directionState;
         public static bool IsKeyPress(Keys key)
         {
             return currentKeyState.IsKeyUp(key) && previousKeyState.IsKeyDown(key);
