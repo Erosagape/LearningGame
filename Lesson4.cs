@@ -26,13 +26,11 @@ namespace LearningGame
 
         Moogle mog=new Moogle(0,0,60,70);
 
-        int totalSeconds;
-        int totalFrames;
-        int framePerSeconds;
-        int frameCount;
+        int totalSeconds,totalFrames,frameCount;
 
         KeyboardState previousKeyState;
         KeyboardState currentKeyState;
+
         Vector2 safePosition;
         Dictionary<string,SpriteCharacter> characters=new Dictionary<string, SpriteCharacter>();
         public Lesson4()
@@ -175,7 +173,6 @@ namespace LearningGame
             if (totalSeconds != (int)timePass.TotalSeconds)
             {
                 totalSeconds = (int)timePass.TotalSeconds;
-                framePerSeconds = totalFrames;
                 totalFrames = 0;
             }
 
