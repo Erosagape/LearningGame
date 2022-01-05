@@ -33,6 +33,8 @@ namespace LearningGame
 
         KeyboardState previousKeyState;
         KeyboardState currentKeyState;
+        Vector2 safePosition;
+        Dictionary<string,SpriteCharacter> characters=new Dictionary<string, SpriteCharacter>();
         public Lesson4()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -58,6 +60,16 @@ namespace LearningGame
             mog.Direction = SpriteDirection.MoveDown;
 
             player = mog;
+            
+            characters.Add("Mog",mog);            
+            characters.Add("White",chocoboWhite);
+            characters.Add("Blue",chocoboBlue);
+            characters.Add("Black",chocoboBlack);
+            characters.Add("Green",chocoboGreen);
+            characters.Add("Gold",chocoboGold);
+            characters.Add("Red",chocoboRed);
+            characters.Add("Orange",chocoboOrange);
+            characters.Add("Yellow",chocoboYellow);
 
             base.Initialize();
         }
@@ -83,6 +95,7 @@ namespace LearningGame
             surface.TileMap.FillMap(new Tile(0, 0, 32, 32));
 
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
+            
             base.LoadContent();
         }
         private bool IsKeyPress(Keys key)
@@ -124,6 +137,7 @@ namespace LearningGame
 
             //Check Walking animation
             character.IsMove = false;
+
             if (IsKeyHold(Keys.W)
             || IsKeyHold(Keys.S)
             || IsKeyHold(Keys.A)
@@ -240,7 +254,7 @@ namespace LearningGame
                 }
                 else if (player.Equals(chocoboGold))
                 {
-                    player = chocoboYellow;
+                    player = mog;
                 }
             }
         }
@@ -303,13 +317,13 @@ namespace LearningGame
             chocoboWhite.Draw(viewPort, spriteBatch, new Vector2(50,0));
             chocoboRed.Draw(viewPort, spriteBatch, new Vector2(500, 350));
             chocoboBlue.Draw(viewPort, spriteBatch, new Vector2(0, 250));
-            chocoboGreen.Draw(viewPort, spriteBatch, new Vector2(750, 150));
+            chocoboGreen.Draw(viewPort, spriteBatch, new Vector2(750, 200));
             chocoboBlack.Draw(viewPort, spriteBatch, new Vector2(0, 500));
             chocoboGold.Draw(viewPort, spriteBatch, new Vector2(650, 450));
             chocoboOrange.Draw(viewPort, spriteBatch, 
                 new Vector2((int)(viewPort.Width - mog.Width) / 2, (int)(viewPort.Height - chocoboOrange.Height)-50) 
                 );
-            
+
             mog.Draw(viewPort, spriteBatch, 
                 new Vector2((int)(viewPort.Width - mog.Width)/2, 100) 
                 );
@@ -324,10 +338,27 @@ namespace LearningGame
             surface.DrawObject(spriteBatch, 700, 400, 80, 60, tree2);
             surface.DrawObject(spriteBatch, 600, 150, 60, 80, tree2);
             surface.DrawObject(spriteBatch, 400, 200, 48, 64, tree2);
-
             spriteBatch.End();
-
+            CheckCollision();
             base.Draw(gameTime);
+        }
+        private void CheckCollision()
+        {
+            bool bCollide = false;
+            foreach (KeyValuePair<string, SpriteCharacter> item in characters)
+            {
+                if (!item.Value.Equals(player))
+                {
+                    if (item.Value.CollisionRectangle.Intersects(player.CollisionRectangle))
+                    {
+                        bCollide = true;
+                        player.SpritePosition = safePosition;
+                    }
+
+                }
+            }
+            if(bCollide==false)
+                safePosition = player.SpritePosition;
         }
     }
 }
